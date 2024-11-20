@@ -2,6 +2,26 @@ import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 
+export async function GET() {
+  try {
+    const barbershop = await prisma.barbershop.findFirst({
+      where: { id: "1" },
+    });
+
+    if (!barbershop) {
+      throw new Error("Barbearia não encontrada.");
+    }
+
+    return NextResponse.json(barbershop);
+  } catch (error) {
+    console.error("Error fetching barbershop:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch barbershop" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST() {
   const barbershop = await prisma.barbershop.findFirst({
     where: { id: "1" },
