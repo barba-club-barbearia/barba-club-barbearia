@@ -1,12 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Scissors, Clock, Users, Menu } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+
+// Criando o cliente do React Query
+const queryClient = new QueryClient();
+
+// Wrapper component para prover o QueryClient
+const QueueApp = () => (
+  <QueryClientProvider client={queryClient}>
+    <BarbershopQueue />
+  </QueryClientProvider>
+);
 
 interface QueueItem {
   id: string;
@@ -18,80 +35,87 @@ interface QueueItem {
 const ADMIN_HASH = "hashadmin"; // Em produção, use uma hash mais segura
 
 const BarbershopQueue: React.FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [queue, setQueue] = useState<QueueItem[]>([]);
   const [name, setName] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   const searchParams = useSearchParams();
   const isAdmin = searchParams.get("admin") === ADMIN_HASH;
 
-  useEffect(() => {
-    fetchQueue();
-  }, []);
-
-  const fetchQueue = async () => {
-    try {
-      const res = await fetch("/api/queue");
-      const result: QueueItem[] = await res.json();
-      setQueue(result);
-    } catch (error) {
-      console.error("Error fetching queue:", error);
-    }
-  };
-
-  const getOpenBarber = async () => {
-    try {
+  // Query para buscar o status da barbearia
+  const { data: isOpen = false } = useQuery({
+    queryKey: ["barbershopStatus"],
+    queryFn: async () => {
       const res = await fetch("/api/open");
-      const result = await res.json();
-      return setIsOpen(result?.is_open);
-    } catch (error) {
-      console.error("Error fetching open barbershop:", error);
-      return null;
-    }
-  };
+      const data = await res.json();
+      return data?.is_open;
+    },
+    refetchInterval: 5000, // Refetch a cada 5 segundos
+  });
 
-  const openBarbershop = async () => {
-    try {
-      await fetch("/api/open", { method: "POST" });
-      setIsOpen((prev) => !prev);
-    } catch (error) {
-      console.error("Error toggling barbershop status:", error);
-    }
-  };
+  // Query para buscar a fila
+  const { data: queue = [] } = useQuery<QueueItem[]>({
+    queryKey: ["queue"],
+    queryFn: async () => {
+      const res = await fetch("/api/queue");
+      return res.json();
+    },
+    refetchInterval: 3000, // Refetch a cada 3 segundos
+  });
 
-  const addToQueue = async () => {
-    if (!name.trim()) {
-      alert("Digite seu nome");
-      return;
-    }
-
-    try {
-      await fetch("/api/queue", {
+  // Mutation para adicionar à fila
+  const addMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/queue", {
         method: "POST",
         body: JSON.stringify({ name }),
         headers: { "Content-Type": "application/json" },
       });
+      return res.json();
+    },
+    onSuccess: () => {
       setName("");
-      fetchQueue();
-    } catch (error) {
-      console.error("Error adding to queue:", error);
-    }
-  };
+      queryClient.invalidateQueries({ queryKey: ["queue"] });
+    },
+  });
 
-  const removeFromQueue = async (id: string) => {
-    if (!isAdmin) return;
-
-    try {
-      await fetch("/api/queue", {
+  // Mutation para remover da fila
+  const removeMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch("/api/queue", {
         method: "DELETE",
         body: JSON.stringify({ id }),
         headers: { "Content-Type": "application/json" },
       });
-      fetchQueue();
-    } catch (error) {
-      console.error("Error removing from queue:", error);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["queue"] });
+    },
+  });
+
+  // Mutation para alterar status da barbearia
+  const toggleOpenMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/open", { method: "POST" });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["barbershopStatus"] });
+    },
+  });
+
+  const addToQueue = () => {
+    if (!name.trim()) {
+      alert("Digite seu nome");
+      return;
     }
+    addMutation.mutate();
+  };
+
+  const removeFromQueue = (id: string) => {
+    if (!isAdmin) return;
+    removeMutation.mutate(id);
   };
 
   const formatDate = (dateString: string): string => {
@@ -117,10 +141,6 @@ const BarbershopQueue: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    getOpenBarber();
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-800">
       {/* Header Section */}
@@ -131,7 +151,7 @@ const BarbershopQueue: React.FC = () => {
             <div className="flex items-center gap-2">
               <Scissors className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
               <h1 className="text-xl md:text-3xl font-bold text-white">
-                Barbearia XYZ
+                Barbearia Barber Shop
               </h1>
             </div>
 
@@ -149,7 +169,7 @@ const BarbershopQueue: React.FC = () => {
                   {isOpen ? "Aberta" : "Fechada"}
                 </Badge>
                 <Button
-                  onClick={openBarbershop}
+                  onClick={() => toggleOpenMutation.mutate()}
                   variant="outline"
                   className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black"
                 >
@@ -185,7 +205,7 @@ const BarbershopQueue: React.FC = () => {
                   {isOpen ? "Aberta" : "Fechada"}
                 </Badge>
                 <Button
-                  onClick={openBarbershop}
+                  onClick={() => toggleOpenMutation.mutate()}
                   variant="outline"
                   className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black w-full"
                 >
@@ -296,7 +316,7 @@ const BarbershopQueue: React.FC = () => {
       <footer className="mt-12 py-6 border-t border-zinc-800">
         <div className="container mx-auto px-4 text-center text-zinc-500">
           <p className="text-sm md:text-base">
-            © 2024 Barbearia XYZ. Todos os direitos reservados.
+            © 2024 Barbearia Barber Shop. Todos os direitos reservados.
           </p>
           <p className="mt-2 text-xs md:text-sm">Siga-nos nas redes sociais!</p>
         </div>
@@ -305,4 +325,4 @@ const BarbershopQueue: React.FC = () => {
   );
 };
 
-export default BarbershopQueue;
+export default QueueApp;
