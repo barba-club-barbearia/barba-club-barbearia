@@ -151,7 +151,7 @@ const BarbershopQueue: React.FC = () => {
             <div className="flex items-center gap-2">
               <Scissors className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
               <h1 className="text-xl md:text-3xl font-bold text-white">
-                Barbearia Barber Shop
+                Barba Club Barbearia
               </h1>
             </div>
 
@@ -316,7 +316,7 @@ const BarbershopQueue: React.FC = () => {
       <footer className="mt-12 py-6 border-t border-zinc-800">
         <div className="container mx-auto px-4 text-center text-zinc-500">
           <p className="text-sm md:text-base">
-            © 2024 Barbearia Barber Shop. Todos os direitos reservados.
+            © 2024 Barba Club Barbearia. Todos os direitos reservados.
           </p>
           <p className="mt-2 text-xs md:text-sm">Siga-nos nas redes sociais!</p>
         </div>
