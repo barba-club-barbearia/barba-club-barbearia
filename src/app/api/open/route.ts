@@ -4,9 +4,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const barbershop = await prisma.barbershop.findFirst({
-      where: { id: "1" },
-    });
+    const barbershop = await prisma.barbershop.findFirst();
 
     if (!barbershop) {
       throw new Error("Barbearia não encontrada.");
@@ -23,33 +21,29 @@ export async function GET() {
 }
 
 export async function POST() {
-  const barbershop = await prisma.barbershop.findFirst({
-    where: { id: "1" },
-  });
+  const barbershop = await prisma.barbershop.findFirst();
 
   if (!barbershop) {
-    await prisma.barbershop.upsert({
-      where: { id: "1" },
-      update: { is_open: true, opened_at: new Date() },
-      create: { id: "1", is_open: true, opened_at: new Date() },
+    await prisma.barbershop.create({
+      data: { is_open: true, opened_at: new Date() },
     });
 
-    return;
+    return NextResponse.json({ message: "Barbearia aberta!" });
   }
 
   if (barbershop.is_open) {
     await prisma.barbershop.update({
-      where: { id: "1" },
+      where: { id: barbershop.id },
       data: { is_open: false },
     });
 
     return NextResponse.json({ message: "Barbearia fechada!" });
   }
-  // Atualiza o status para "Aberto"
-  await prisma.barbershop.upsert({
-    where: { id: "1" },
-    update: { is_open: true, opened_at: new Date() },
-    create: { id: "1", is_open: true, opened_at: new Date() },
+
+  await prisma.barbershop.update({
+    where: { id: barbershop.id },
+    data: { is_open: true, opened_at: new Date() },
   });
+
   return NextResponse.json({ message: "Barbearia aberta!" });
 }

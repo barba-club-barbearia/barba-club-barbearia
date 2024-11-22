@@ -15,10 +15,8 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
-// Criando o cliente do React Query
 const queryClient = new QueryClient();
 
-// Wrapper component para prover o QueryClient
 const QueueApp = () => (
   <QueryClientProvider client={queryClient}>
     <BarbershopQueue />
@@ -32,9 +30,9 @@ interface QueueItem {
   createdAt: string;
 }
 
-const ADMIN_HASH = "hashadmin"; // Em produção, use uma hash mais segura
+const ADMIN_HASH = "hashadmin";
 
-const BarbershopQueue: React.FC = () => {
+const BarbershopQueue = () => {
   const [name, setName] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -42,7 +40,6 @@ const BarbershopQueue: React.FC = () => {
   const searchParams = useSearchParams();
   const isAdmin = searchParams.get("admin") === ADMIN_HASH;
 
-  // Query para buscar o status da barbearia
   const { data: isOpen = false } = useQuery({
     queryKey: ["barbershopStatus"],
     queryFn: async () => {
@@ -50,20 +47,20 @@ const BarbershopQueue: React.FC = () => {
       const data = await res.json();
       return data?.is_open;
     },
-    refetchInterval: 5000, // Refetch a cada 5 segundos
+    staleTime: 30000,
+    refetchInterval: (data) => (data ? 5000 : 30000),
   });
 
-  // Query para buscar a fila
   const { data: queue = [] } = useQuery<QueueItem[]>({
     queryKey: ["queue"],
     queryFn: async () => {
       const res = await fetch("/api/queue");
       return res.json();
     },
-    refetchInterval: 3000, // Refetch a cada 3 segundos
+    enabled: isOpen,
+    refetchInterval: isOpen ? 3000 : false,
   });
 
-  // Mutation para adicionar à fila
   const addMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/queue", {
@@ -79,7 +76,6 @@ const BarbershopQueue: React.FC = () => {
     },
   });
 
-  // Mutation para remover da fila
   const removeMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch("/api/queue", {
@@ -94,7 +90,6 @@ const BarbershopQueue: React.FC = () => {
     },
   });
 
-  // Mutation para alterar status da barbearia
   const toggleOpenMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/open", { method: "POST" });

@@ -3,19 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Queue {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   position  Int
   createdAt DateTime @default(now())
 }
 
-model barbershop {
-  id        String   @id @default(uuid())
+model Barbershop {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   is_open   Boolean
   opened_at DateTime
 }
