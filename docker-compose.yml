@@ -1,25 +1,19 @@
-version: "3.9"
+version: "4.0"
 
 services:
-  mongodb:
-    image: mongo:6
-    container_name: mongodb_container
-    restart: always
+  database:
+    build:
+      context: ./mongodb_rs
+      args:
+        MONGO_VERSION: "6.0" # Substitua pela versão do MongoDB que você deseja usar
+    container_name: database
     environment:
-      MONGO_INITDB_ROOT_USERNAME: barber_club
-      MONGO_INITDB_ROOT_PASSWORD: inicio@1
-      MONGO_INITDB_DATABASE: barber_club
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: barba_club
+      MONGO_REPLICA_HOST: localhost
+      MONGO_REPLICA_PORT: 27017 #porta
+    #    volumes:
+    #      - /home/barry/mongodb/database:/data/db
     ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - app_network
-
-volumes:
-  mongodb_data:
-    driver: local
-
-networks:
-  app_network:
-    driver: bridge
+      - 27017:27017
