@@ -7,7 +7,15 @@ export async function GET() {
     const barbershop = await prisma.barbershop.findFirst();
 
     if (!barbershop) {
-      throw new Error("Barbearia não encontrada.");
+      return NextResponse.json(
+        {
+          message: "barbearia nao encontrada",
+        },
+        {
+          status: 404,
+          headers: { "content-type": "application/json" },
+        }
+      );
     }
 
     return NextResponse.json(barbershop);
