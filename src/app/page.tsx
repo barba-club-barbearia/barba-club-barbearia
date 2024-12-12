@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Scissors, Clock, Users, Menu } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useQuery,
   useMutation,
@@ -33,6 +33,7 @@ interface QueueItem {
 const ADMIN_HASH = "hashadmin";
 
 const BarbershopQueue = () => {
+  const router = useRouter();
   const [name, setName] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -135,6 +136,25 @@ const BarbershopQueue = () => {
       addToQueue();
     }
   };
+
+  useEffect(() => {
+    const savedQuery = localStorage.getItem("queryParams");
+    const query = window.location.search;
+
+    if (!savedQuery) {
+      if (query.includes("admin")) {
+        localStorage.setItem("queryParams", query);
+      }
+
+      return;
+    }
+
+    if (query.includes("admin")) {
+      return;
+    }
+
+    router.push(`/?admin=hashadmin`);
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-800">
