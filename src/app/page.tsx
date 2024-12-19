@@ -31,7 +31,6 @@ const ADMIN_HASH = "hashadmin";
 const BarbershopQueue = () => {
   const [name, setName] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [custommerCutting, setCustomerCutting] = useState<QueueItem | null>();
   const queryClient = useQueryClient();
 
   const searchParams = useSearchParams();
@@ -197,14 +196,6 @@ const BarbershopQueue = () => {
           )}
         </div>
       </header>
-
-      {custommerCutting && (
-        <CurrentCustomerSection
-          customer={custommerCutting}
-          isAdmin={isAdmin}
-          onFinish={removeFromQueue}
-        />
-      )}
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
