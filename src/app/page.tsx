@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Scissors, Clock, Users, Menu } from "lucide-react";
+import { Scissors, Menu } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import {
   useQuery,
@@ -15,6 +13,10 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
+import QueueSection from "./queue-section";
+
+import { QueueItem } from "./types";
+
 const queryClient = new QueryClient();
 
 const QueueApp = () => (
@@ -22,13 +24,6 @@ const QueueApp = () => (
     <BarbershopQueue />
   </QueryClientProvider>
 );
-
-interface QueueItem {
-  id: string;
-  name: string;
-  position: number;
-  createdAt: string;
-}
 
 const ADMIN_HASH = "hashadmin";
 
@@ -111,18 +106,6 @@ const BarbershopQueue = () => {
   const removeFromQueue = (id: string) => {
     if (!isAdmin) return;
     removeMutation.mutate(id);
-  };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -214,97 +197,16 @@ const BarbershopQueue = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <Card className="bg-zinc-800 border-zinc-700">
-          <CardHeader>
-            <CardTitle className="text-lg md:text-xl text-white flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
-              Fila Atual
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isOpen ? (
-              <>
-                {/* Queue Status */}
-                <div className="bg-zinc-900 rounded-lg p-4 md:p-6 mb-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <Clock className="h-5 w-5 text-amber-500" />
-                      <span className="text-sm md:text-base text-zinc-400">
-                        Clientes na fila:
-                      </span>
-                    </div>
-                    <span className="text-white font-semibold">
-                      {queue?.length}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Client List */}
-                <div className="space-y-4">
-                  {queue?.length > 0 ? (
-                    queue?.map((client) => (
-                      <div
-                        key={client.id}
-                        className="bg-zinc-900 p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <Badge
-                              variant="secondary"
-                              className="bg-amber-500/10 text-amber-500"
-                            >
-                              #{client.position}
-                            </Badge>
-                            <span className="text-white font-medium">
-                              {client.name}
-                            </span>
-                          </div>
-                          <p className="text-xs md:text-sm text-zinc-500 mt-1">
-                            Entrou em: {formatDate(client.createdAt)}
-                          </p>
-                        </div>
-                        {isAdmin && (
-                          <Button
-                            variant="destructive"
-                            className="w-full md:w-auto"
-                            onClick={() => removeFromQueue(client.id)}
-                          >
-                            Remover
-                          </Button>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-zinc-500">
-                      Nenhum cliente na fila
-                    </div>
-                  )}
-                </div>
-
-                {/* Queue Input */}
-                <div className="mt-6 flex flex-col md:flex-row gap-3">
-                  <Input
-                    placeholder="Digite seu nome"
-                    value={name}
-                    onChange={handleInputChange}
-                    onKeyPress={handleKeyPress}
-                    className="bg-zinc-900 border-zinc-700 text-white"
-                  />
-                  <Button
-                    onClick={addToQueue}
-                    className="bg-amber-500 hover:bg-amber-600 text-black md:w-auto"
-                  >
-                    Entrar na Fila
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-8 text-zinc-500">
-                A barbearia está fechada.
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <QueueSection
+          queue={queue}
+          open={isOpen}
+          name={name}
+          onNameChange={handleInputChange}
+          onEnterQueue={addToQueue}
+          onKeyPress={handleKeyPress}
+          onRemoveFromQueue={removeFromQueue}
+          isAdmin={isAdmin}
+        />
       </main>
 
       {/* Footer */}
