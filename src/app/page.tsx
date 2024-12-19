@@ -13,7 +13,6 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
-import CurrentCustomerSection from "./current-customer";
 import QueueSection from "./queue-section";
 
 import { QueueItem } from "./types";
@@ -82,7 +81,6 @@ const BarbershopQueue = () => {
       return res.json();
     },
     onSuccess: () => {
-      setCustomerCutting(queue[0]);
       queryClient.invalidateQueries({ queryKey: ["queue"] });
     },
   });
