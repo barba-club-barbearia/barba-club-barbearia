@@ -38,6 +38,22 @@ const QueueSection = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Tolerance Notice */}
+        {queue?.length > 0 && (
+          <div className="mb-6 bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+            <div className="flex gap-3">
+              <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-amber-500 font-medium">Aviso</p>
+                <p className="text-sm text-zinc-400">
+                  Fique atento quando chegar sua vez na fila. Caso você não
+                  esteja presente quando for chamado, sua vez poderá ser passada
+                  para o próximo cliente.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Client List */}
         <div className="space-y-4">
