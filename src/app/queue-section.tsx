@@ -32,9 +32,6 @@ const QueueSection = ({
         <CardTitle className="text-lg md:text-xl text-white flex items-center gap-2">
           <Users className="h-5 w-5 text-amber-500" />
           Fila Atual
-          <Badge variant="secondary" className="bg-amber-500/10 text-amber-500">
-            {queue?.length}
-          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
