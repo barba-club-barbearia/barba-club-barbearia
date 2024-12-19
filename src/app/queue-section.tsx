@@ -8,6 +8,7 @@ import { QueueItem } from "./types";
 import { formatDate } from "@/utils/formatDate";
 
 interface QueueSectionProps {
+  open: boolean;
   queue: QueueItem[];
   name: string;
   onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -19,6 +20,7 @@ interface QueueSectionProps {
 
 const QueueSection = ({
   queue,
+  open,
   name,
   onNameChange,
   onEnterQueue,
@@ -95,21 +97,23 @@ const QueueSection = ({
         </div>
 
         {/* Queue Input */}
-        <div className="mt-6 flex flex-col md:flex-row gap-3">
-          <Input
-            placeholder="Digite seu nome"
-            value={name}
-            onChange={onNameChange}
-            onKeyPress={onKeyPress}
-            className="bg-zinc-900 border-zinc-700 text-white"
-          />
-          <Button
-            onClick={onEnterQueue}
-            className="bg-amber-500 hover:bg-amber-600 text-black md:w-auto"
-          >
-            Entrar na Fila
-          </Button>
-        </div>
+        {open && (
+          <div className="mt-6 flex flex-col md:flex-row gap-3">
+            <Input
+              placeholder="Digite seu nome"
+              value={name}
+              onChange={onNameChange}
+              onKeyUpCapture={onKeyPress}
+              className="bg-zinc-900 border-zinc-700 text-white"
+            />
+            <Button
+              onClick={onEnterQueue}
+              className="bg-amber-500 hover:bg-amber-600 text-black md:w-auto"
+            >
+              Entrar na Fila
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

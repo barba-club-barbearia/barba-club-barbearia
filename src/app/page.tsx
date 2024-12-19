@@ -199,6 +199,7 @@ const BarbershopQueue = () => {
       <main className="container mx-auto px-4 py-8">
         <QueueSection
           queue={queue}
+          open={isOpen}
           name={name}
           onNameChange={handleInputChange}
           onEnterQueue={addToQueue}
