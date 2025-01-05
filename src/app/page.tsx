@@ -30,7 +30,8 @@ const ADMIN_HASH = "hashadmin";
 
 const BarbershopQueue = () => {
   const { replace } = useRouter();
-  const { data: session } = useSession({
+
+  useSession({
     required: true,
     onUnauthenticated() {
       replace("/entrar");
