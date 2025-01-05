@@ -4,7 +4,7 @@ import "./globals.css";
 import { Suspense } from "react";
 import RegisterSW from "@/components/ServiceWorker";
 import IsAdmin from "@/components/IsAdmin";
-
+import { SessionProviderComponent } from "@/components/SessionProvider";
 const workSans = Work_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -27,7 +27,9 @@ export default function RootLayout({
       </head>
       <Suspense>
         <RegisterSW />
-        <body className={`${workSans.className} antialiased`}>{children}</body>
+        <body className={`${workSans.className} antialiased`}>
+          <SessionProviderComponent>{children}</SessionProviderComponent>
+        </body>
       </Suspense>
     </html>
   );

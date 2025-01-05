@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Scissors, Menu } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useQuery,
   useMutation,
@@ -16,6 +16,7 @@ import {
 import QueueSection from "./queue-section";
 
 import { QueueItem } from "./types";
+import { signOut, useSession } from "next-auth/react";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,14 @@ const QueueApp = () => (
 const ADMIN_HASH = "hashadmin";
 
 const BarbershopQueue = () => {
+  const { replace } = useRouter();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      replace("/entrar");
+    },
+  });
+
   const [name, setName] = useState<string>("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -126,11 +135,21 @@ const BarbershopQueue = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo & Title */}
-            <div className="flex items-center gap-2">
-              <Scissors className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
-              <h1 className="text-xl md:text-3xl font-bold text-white">
-                Barba Club Barbearia
-              </h1>
+            <div className="flex w-full items-center justify-between gap-2">
+              <div className="flex gap-2">
+                <Scissors className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
+                <h1 className="text-xl md:text-3xl font-bold text-white">
+                  Barba Club Barbearia
+                </h1>
+              </div>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  signOut({ callbackUrl: "/entrar" });
+                }}
+              >
+                Sair
+              </Button>
             </div>
 
             {/* Desktop Controls - Only show if admin */}

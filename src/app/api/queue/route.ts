@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET() {
   try {
@@ -17,13 +19,29 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
-  const { name } = await request.json();
+export async function POST() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user || !session?.user?.name) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+
+  const { id } = session.user;
 
   // Adiciona cliente à fila
-  const position = (await prisma.queue.count()) + 1;
+  const positionCount = (await prisma.queue.count()) + 1;
   const newClient = await prisma.queue.create({
-    data: { name, position },
+    data: { position: positionCount, userId: id },
+    select: {
+      id: true,
+      position: true,
+      user: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
   });
 
   return NextResponse.json(newClient);
