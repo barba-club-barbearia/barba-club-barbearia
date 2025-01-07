@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Scissors, Menu } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Scissors, Menu, X, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   useQuery,
   useMutation,
@@ -17,6 +17,7 @@ import QueueSection from "./queue-section";
 
 import { QueueItem } from "./types";
 import { signOut, useSession } from "next-auth/react";
+import { MenuSection } from "./menu-section";
 
 const queryClient = new QueryClient();
 
@@ -26,24 +27,19 @@ const QueueApp = () => (
   </QueryClientProvider>
 );
 
-const ADMIN_HASH = "hashadmin";
-
 const BarbershopQueue = () => {
   const { replace } = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
-  useSession({
+  const session = useSession({
     required: true,
     onUnauthenticated() {
       replace("/entrar");
     },
   });
 
-  const [name, setName] = useState<string>("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const queryClient = useQueryClient();
-
-  const searchParams = useSearchParams();
-  const isAdmin = searchParams.get("admin") === ADMIN_HASH;
+  const isAdmin = session.data?.user?.isAdmin;
 
   const { data: isOpen = false } = useQuery({
     queryKey: ["barbershopStatus"],
@@ -66,6 +62,16 @@ const BarbershopQueue = () => {
     refetchInterval: isOpen ? 3000 : false,
   });
 
+  const toggleOpenMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/open", { method: "POST" });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["barbershopStatus"] });
+    },
+  });
+
   const addMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/queue", {
@@ -76,7 +82,6 @@ const BarbershopQueue = () => {
       return res.json();
     },
     onSuccess: () => {
-      setName("");
       queryClient.invalidateQueries({ queryKey: ["queue"] });
     },
   });
@@ -95,147 +100,160 @@ const BarbershopQueue = () => {
     },
   });
 
-  const toggleOpenMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch("/api/open", { method: "POST" });
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["barbershopStatus"] });
-    },
-  });
-
   const addToQueue = () => {
-    if (!name.trim()) {
-      alert("Digite seu nome");
-      return;
-    }
     addMutation.mutate();
   };
 
   const removeFromQueue = (id: string) => {
-    if (!isAdmin) return;
     removeMutation.mutate(id);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setName(e.target.value);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addToQueue();
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-800">
+    <div className="min-h-screen bg-[#1a1a1a] text-zinc-100">
       {/* Header Section */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-zinc-900/95 backdrop-blur z-50">
+      <header className="border-b border-amber-900/20 sticky top-0 bg-[#0f0f0f]/95 backdrop-blur z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo & Title */}
-            <div className="flex w-full items-center justify-between gap-2">
-              <div className="flex gap-2">
-                <Scissors className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
-                <h1 className="text-xl md:text-3xl font-bold text-white">
-                  Barba Club Barbearia
+            <div className="flex items-center gap-4">
+              <div className="bg-amber-500 p-2 rounded-lg">
+                <Scissors className="h-6 w-6 md:h-8 md:w-8 text-black" />
+              </div>
+              <div>
+                <h1 className="text-xl md:text-3xl font-bold text-amber-500">
+                  Barba Club
                 </h1>
+                <p className="text-xs md:text-sm text-zinc-400">
+                  Barbearia Premium
+                </p>
               </div>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  signOut({ callbackUrl: "/entrar" });
-                }}
-              >
-                Sair
-              </Button>
             </div>
 
-            {/* Desktop Controls - Only show if admin */}
-            {isAdmin && (
-              <div className="hidden md:flex items-center gap-4">
-                <Badge
-                  variant="outline"
-                  className={`px-4 py-2 ${
-                    isOpen
-                      ? "text-green-500 border-green-500"
-                      : "text-red-500 border-red-500"
-                  }`}
-                >
-                  {isOpen ? "Aberta" : "Fechada"}
-                </Badge>
-                <Button
-                  onClick={() => toggleOpenMutation.mutate()}
-                  variant="outline"
-                  className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black"
-                >
-                  {isOpen ? "Fechar Barbearia" : "Abrir Barbearia"}
-                </Button>
-              </div>
-            )}
-
-            {/* Mobile Menu Button - Only show if admin */}
-            {isAdmin && (
-              <Button
-                variant="ghost"
-                className="md:hidden text-white"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
+            <Button
+              variant="ghost"
+              className="text-amber-500 hover:text-amber-400"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
                 <Menu className="h-6 w-6" />
-              </Button>
-            )}
+              )}
+            </Button>
           </div>
-
-          {/* Mobile Menu - Only show if admin */}
-          {isAdmin && isMobileMenuOpen && (
-            <div className="md:hidden mt-4 py-4 border-t border-zinc-800">
-              <div className="flex flex-col gap-4">
-                <Badge
-                  variant="outline"
-                  className={`px-4 py-2 text-center ${
-                    isOpen
-                      ? "text-green-500 border-green-500"
-                      : "text-red-500 border-red-500"
-                  }`}
-                >
-                  {isOpen ? "Aberta" : "Fechada"}
-                </Badge>
-                <Button
-                  onClick={() => toggleOpenMutation.mutate()}
-                  variant="outline"
-                  className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black w-full"
-                >
-                  {isOpen ? "Fechar Barbearia" : "Abrir Barbearia"}
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </header>
 
+      <div
+        className={`fixed inset-y-0 right-0 w-80 bg-[#0f0f0f] shadow-2xl transform transition-transform duration-300 ease-in-out ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        } z-50`}
+      >
+        <div className="h-full flex flex-col overflow-y-auto">
+          {/* Menu Header */}
+          <div className="border-b border-amber-900/20 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="bg-amber-500 p-1.5 rounded">
+                  <Scissors className="h-5 w-5 text-black" />
+                </div>
+                <span className="text-amber-500 font-semibold">Menu</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-zinc-400 hover:text-zinc-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Admin Controls */}
+            {isAdmin && (
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-zinc-500" />
+                  <h3 className="text-sm font-medium text-zinc-400">
+                    Status da Barbearia
+                  </h3>
+                </div>
+                <Badge
+                  variant="outline"
+                  className={`w-full justify-center py-3 ${
+                    isOpen
+                      ? "text-green-400 border-green-400/50 bg-green-500/5"
+                      : "text-red-400 border-red-400/50 bg-red-500/5"
+                  }`}
+                >
+                  {isOpen ? "Aberta" : "Fechada"}
+                </Badge>
+                <Button
+                  onClick={() => {
+                    toggleOpenMutation.mutate();
+                    setIsMenuOpen(false);
+                  }}
+                  variant="outline"
+                  className="w-full bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black"
+                >
+                  {isOpen ? "Fechar Barbearia" : "Abrir Barbearia"}
+                </Button>
+              </div>
+            )}
+
+            {/* Menu Sections */}
+            <MenuSection />
+          </div>
+
+          {/* Menu Footer */}
+          <div className="mt-auto border-t border-amber-900/20 p-6">
+            <Button
+              variant="ghost"
+              className="w-full text-red-400 hover:text-red-300 hover:bg-red-500/10"
+              onClick={() => signOut({ callbackUrl: "/entrar" })}
+            >
+              Sair
+            </Button>
+          </div>
+        </div>
+      </div>
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        } z-40`}
+        onClick={() => setIsMenuOpen(false)}
+      />
+
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <QueueSection
-          queue={queue}
-          open={isOpen}
-          name={name}
-          onNameChange={handleInputChange}
-          onEnterQueue={addToQueue}
-          onKeyPress={handleKeyPress}
-          onRemoveFromQueue={removeFromQueue}
-          isAdmin={isAdmin}
-        />
+        <div className="max-w-3xl mx-auto">
+          <QueueSection
+            queue={queue}
+            user={session.data?.user}
+            open={isOpen}
+            onEnterQueue={addToQueue}
+            onRemoveFromQueue={removeFromQueue}
+            isAdmin={isAdmin}
+          />
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 py-6 border-t border-zinc-800">
-        <div className="container mx-auto px-4 text-center text-zinc-500">
-          <p className="text-sm md:text-base">
-            © 2024 Barba Club Barbearia. Todos os direitos reservados.
-          </p>
-          <p className="mt-2 text-xs md:text-sm">Siga-nos nas redes sociais!</p>
+      <footer className="mt-12 py-8 border-t border-amber-900/20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="bg-[#0f0f0f] rounded-lg p-6 max-w-2xl mx-auto">
+            <div className="flex justify-center mb-4">
+              <div className="bg-amber-500 p-1.5 rounded">
+                <Scissors className="h-5 w-5 text-black" />
+              </div>
+            </div>
+            <p className="text-sm text-zinc-400 mb-2">
+              © 2024 Barba Club Barbearia. Todos os direitos reservados.
+            </p>
+            <p className="text-xs text-zinc-500">
+              Siga-nos nas redes sociais para novidades e promoções!
+            </p>
+          </div>
         </div>
       </footer>
     </div>

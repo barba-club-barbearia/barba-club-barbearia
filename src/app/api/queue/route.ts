@@ -8,6 +8,18 @@ export async function GET() {
   try {
     const queue = await prisma.queue.findMany({
       orderBy: { position: "asc" },
+      select: {
+        id: true,
+        position: true,
+        createdAt: true,
+        user: {
+          select: {
+            name: true,
+            id: true,
+            isAdmin: true,
+          },
+        },
+      },
     });
     return NextResponse.json(queue);
   } catch (error) {
@@ -39,6 +51,7 @@ export async function POST() {
         select: {
           name: true,
           id: true,
+          isAdmin: true,
         },
       },
     },
