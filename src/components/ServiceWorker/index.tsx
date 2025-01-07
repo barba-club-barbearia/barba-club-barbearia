@@ -13,6 +13,12 @@ export default function RegisterSW() {
         .catch((error) => {
           console.error("Erro ao registrar o Service Worker:", error);
         });
+
+      navigator.serviceWorker.getRegistration().then((registration) => {
+        if (registration) {
+          registration.update();
+        }
+      });
     }
   }, []);
 

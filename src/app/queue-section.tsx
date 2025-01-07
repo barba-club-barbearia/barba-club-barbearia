@@ -44,7 +44,7 @@ const QueueSection = ({
         {open ? (
           <>
             {/* Status Bar */}
-            <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between pb-4 rounded-lg border border-amber-900/10 shadow-sm">
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between pb-4 rounded-lg  shadow-sm">
               <p className="text-lg md:text-xl font-semibold text-zinc-200">
                 Fila Atual
               </p>
@@ -144,7 +144,7 @@ const QueueSection = ({
                               {item.user.name}
                             </span>
                             {item.user.id === user?.id && (
-                              <Badge className="bg-amber-500 text-black text-xs">
+                              <Badge className=" px-1 py-0 bg-amber-500 text-black text-xs hover:text-white">
                                 Você
                               </Badge>
                             )}
