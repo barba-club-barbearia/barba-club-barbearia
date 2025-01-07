@@ -1,7 +1,13 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, AlertCircle, CircleMinus, CirclePlus } from "lucide-react";
+import {
+  Users,
+  AlertCircle,
+  CircleMinus,
+  CirclePlus,
+  Clock,
+} from "lucide-react";
 import { QueueItem } from "./types";
 import { formatDate } from "@/utils/formatDate";
 
@@ -38,6 +44,16 @@ const QueueSection = ({
         {open ? (
           <>
             {/* Status Bar */}
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between pb-4 rounded-lg border border-amber-900/10 shadow-sm">
+              <p className="text-lg md:text-xl font-semibold text-zinc-200">
+                Fila Atual
+              </p>
+              <div className="flex items-center gap-2 text-sm text-zinc-400 mt-2 sm:mt-0">
+                <Clock className="h-4 w-4" />
+                atualizado em tempo real
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 bg-[#1a1a1a] p-3 md:p-4 rounded-lg border border-amber-900/10">
               <div className="flex items-center gap-3 mb-3 sm:mb-0">
                 <div className="bg-amber-500/10 p-2 rounded-lg">
