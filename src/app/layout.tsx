@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
-import RegisterSW from "@/components/ServiceWorker";
 import { SessionProviderComponent } from "@/components/SessionProvider";
 const workSans = Work_Sans({ subsets: ["latin"] });
 
@@ -22,7 +21,6 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <Suspense>
-        <RegisterSW />
         <body className={`${workSans.className} antialiased`}>
           <SessionProviderComponent>{children}</SessionProviderComponent>
         </body>

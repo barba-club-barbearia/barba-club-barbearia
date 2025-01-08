@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const withPWA = require("next-pwa")({
-  dest: "public",
+  dest: "public",  // Garante que o Service Worker esteja na pasta 'public'
   register: true,
   skipWaiting: true,
-  disable: false,
-  buildExcludes: [/middleware-manifest\.json$/], // Exclua arquivos problemáticos
+  disable: false,  // Certifique-se de que o PWA não está desabilitado
 });
 
 
