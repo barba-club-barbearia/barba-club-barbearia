@@ -3,7 +3,7 @@ const withPWA = require("next-pwa")({
   dest: "public",  // Garante que o Service Worker esteja na pasta 'public'
   register: true,
   skipWaiting: true,
-  disable: false,  // Certifique-se de que o PWA não está desabilitado
+  disable: process.env.NODE_ENV === 'development',  // Certifique-se de que o PWA não está desabilitado
 });
 
 

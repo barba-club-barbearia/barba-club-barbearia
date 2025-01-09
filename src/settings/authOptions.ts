@@ -18,8 +18,6 @@ export const authOptions: AuthOptions = {
         password: { label: "Senha", type: "password" },
       },
       async authorize(credentials) {
-        console.log("credentials", credentials);
-
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciais inválidas");
         }
@@ -27,8 +25,6 @@ export const authOptions: AuthOptions = {
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-
-        console.log("user", user);
 
         if (!user) {
           throw new Error("Usuário não encontrado");
@@ -64,7 +60,7 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.isAdmin = token.isAdmin;
+        session.user.isAdmin = token.isAdmin as boolean;
         delete session.user.image;
       }
 

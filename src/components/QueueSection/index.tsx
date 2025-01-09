@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,33 +9,23 @@ import {
   CirclePlus,
   Clock,
 } from "lucide-react";
-import { QueueItem } from "./types";
 import { formatDate } from "@/utils/formatDate";
+import { useBarbershop } from "@/contexts/BarberShop";
 
 interface QueueSectionProps {
   open: boolean;
-  queue: QueueItem[];
-  user: { id: string; name: string };
-  onEnterQueue: () => void;
-  onRemoveFromQueue: (id: string) => void;
-  isAdmin: boolean;
+  user: any;
 }
 
-const QueueSection = ({
-  queue,
-  open,
-  user,
-  onEnterQueue,
-  onRemoveFromQueue,
-  isAdmin,
-}: QueueSectionProps) => {
+const QueueSection = ({ open, user }: QueueSectionProps) => {
+  const { addToQueue, isAdmin, removeFromQueue, queue } = useBarbershop();
   const userInQueue = queue.find((item) => item.user.id === user?.id);
 
   const handleOnClick = () => {
     if (!userInQueue) {
-      onEnterQueue();
+      addToQueue();
     } else {
-      onRemoveFromQueue(userInQueue.id);
+      removeFromQueue(userInQueue.id);
     }
   };
 
@@ -159,7 +150,7 @@ const QueueSection = ({
                           variant="ghost"
                           size="sm"
                           className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm w-full sm:w-auto"
-                          onClick={() => onRemoveFromQueue(item.id)}
+                          onClick={() => removeFromQueue(item.id)}
                         >
                           Remover
                         </Button>
