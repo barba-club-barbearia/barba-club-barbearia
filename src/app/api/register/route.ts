@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { normalizeName } from "@/utils/normalizeName";
 
 const prisma = new PrismaClient();
 
@@ -23,12 +25,20 @@ export async function POST(request: Request) {
       );
     }
 
+    let normalizedName;
+
+    try {
+      normalizedName = normalizeName(name);
+    } catch (error: any) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     const hashedPassword = await hash(password, 12);
 
     const user = await prisma.user.create({
       data: {
         email,
-        name,
+        name: normalizedName,
         password: hashedPassword,
       },
     });

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   }
 
   const token = uuid();
-  const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
+  const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/resetar-senha?token=${token}`;
 
   await prisma.passwordResetToken.upsert({
     where: {

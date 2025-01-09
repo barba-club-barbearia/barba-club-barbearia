@@ -25,7 +25,7 @@ export default function AuthLayout({
         <QueryClientProviderComponent>
           <BarbershopProvider>
             <Header />
-            <main>{children}</main>
+            <main className="container mx-auto px-4 py-8">{children}</main>
             <Footer />
           </BarbershopProvider>
         </QueryClientProviderComponent>

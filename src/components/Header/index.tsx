@@ -6,8 +6,10 @@ import { useState } from "react";
 import { useBarbershop } from "@/contexts/BarberShop";
 import { Badge } from "../ui/badge";
 import { MenuSection } from "../MenuSection";
+import { useRouter } from "next/navigation";
 
 export const Header = () => {
+  const router = useRouter();
   const { isOpen, toggleBarbershop, isAdmin } = useBarbershop();
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -17,7 +19,10 @@ export const Header = () => {
       <header className="border-b border-amber-900/20 sticky top-0 bg-[#0f0f0f]/95 backdrop-blur z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div
+              className="flex items-center gap-4 cursor-pointer"
+              onClick={() => router.push("/")}
+            >
               <div className="bg-amber-500 p-2 rounded-lg">
                 <Scissors className="h-6 w-6 md:h-8 md:w-8 text-black" />
               </div>
@@ -105,7 +110,7 @@ export const Header = () => {
             </div>
 
             {/* Menu Sections */}
-            <MenuSection />
+            <MenuSection onClickLink={() => setIsMenuOpen(false)} />
           </div>
 
           {/* Menu Footer */}

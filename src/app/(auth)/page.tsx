@@ -22,11 +22,9 @@ export default function BarbershopQueue() {
   return (
     <div>
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
-          <QueueSection user={session.data?.user} open={isOpen} />
-        </div>
-      </main>
+      <div className="max-w-3xl mx-auto">
+        <QueueSection user={session.data?.user} open={isOpen} />
+      </div>
     </div>
   );
 }
