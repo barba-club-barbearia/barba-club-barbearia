@@ -4,6 +4,7 @@ const withPWA = require("next-pwa")({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',  // Certifique-se de que o PWA não está desabilitado
+  customWorkerDir: "worker", // Diretório onde está o custom Service Worker
 });
 
 
