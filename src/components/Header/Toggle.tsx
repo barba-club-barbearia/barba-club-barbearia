@@ -1,41 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNotification } from "@/contexts/Notification/useNotification";
 
 const NotificationToggle = () => {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const { isSubscribed, handleSubscribe, isGranted, isDenied, errorMessage } =
+    useNotification();
 
-  useEffect(() => {
-    if (Notification.permission === "default") {
-      Notification.requestPermission().then((permission) => {
-        console.log("Notificação permitida:", permission);
-      });
-    }
-  }, []);
-
-  const checkNotificationStatus = async () => {
-    const permission = await Notification.permission;
-    setNotificationsEnabled(permission === "granted");
-  };
-
-  useEffect(() => {
-    checkNotificationStatus();
-  }, []);
+  console.log({
+    isGranted,
+    isDenied,
+    errorMessage,
+  });
 
   const handleToggleNotifications = async () => {
-    if (!notificationsEnabled) {
-      const permission = await Notification.requestPermission();
+    if (!isSubscribed) {
+      const permission = handleSubscribe();
 
       console.log(permission);
-      setNotificationsEnabled(permission === "granted");
-    } else {
-      setNotificationsEnabled(false);
     }
   };
 
   return (
     <div className="space-y-2">
       {/* Notification Section */}
+      <div>
+        sua notificacao está:
+        {JSON.stringify({ isGranted, isDenied })}
+        {JSON.stringify({ errorMessage })}
+      </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Bell className="h-4 w-4 text-zinc-500" />
@@ -46,12 +39,12 @@ const NotificationToggle = () => {
           variant="ghost"
           className={`h-8 px-3 text-xs flex items-center gap-2
             ${
-              notificationsEnabled
+              isSubscribed
                 ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 hover:text-amber-500"
                 : "bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-400"
             }`}
         >
-          {notificationsEnabled ? (
+          {isSubscribed ? (
             <>
               <span>Ativadas</span>
               <Bell className="h-3 w-3" />

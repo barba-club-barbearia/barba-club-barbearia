@@ -1,10 +1,14 @@
 self.addEventListener("push", (event) => {
   if (event.data) {
     const data = event.data.json();
-    self.registration.showNotification(data.title, {
+    const options = {
       body: data.body,
-      icon: data.icon || "/icon.png", // Ícone da notificação
-    });
+      icon: data.icon || "/icon.png",
+      vibrate: [100, 50, 100],
+    }
+
+    event.waitUntil(self.registration.showNotification(data.title, options))
+
   } else {
     console.error("Push event sem dados!");
   }

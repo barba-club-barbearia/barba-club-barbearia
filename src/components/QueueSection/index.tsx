@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/utils/formatDate";
 import { useBarbershop } from "@/contexts/BarberShop";
+import { useNotification } from "@/contexts/Notification/useNotification";
 
 interface QueueSectionProps {
   open: boolean;
@@ -19,6 +20,8 @@ interface QueueSectionProps {
 }
 
 const QueueSection = ({ open, user }: QueueSectionProps) => {
+  const { subscription } = useNotification();
+
   const [isLoadingActionQueue, setIsLoadingActionQueue] = useState(false);
   const { addToQueue, isAdmin, removeFromQueue, queue } = useBarbershop();
 
@@ -28,15 +31,14 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
 
   const [previousPosition, setPreviousPosition] = useState<number | null>(null);
 
-  const sendNotification = (title: string, message: string) => {
-    if (Notification.permission === "granted") {
-      new Notification(title, {
-        body: message,
-        icon: "/icon.png",
-      });
-    } else {
-      console.log("Notificações não permitidas pelo usuário.");
-    }
+  const sendNotification = async (title: string, message: string) => {
+    await fetch("/api/web-push/send", {
+      method: "POST",
+      body: JSON.stringify({ title, message, subscription }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   };
 
   useEffect(() => {

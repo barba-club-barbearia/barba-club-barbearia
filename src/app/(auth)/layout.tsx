@@ -4,6 +4,7 @@ import { BarbershopProvider } from "@/contexts/BarberShop";
 import { QueryClientProviderComponent } from "@/components/QueryClientProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { NotificationProvider } from "@/contexts/Notification/useNotification";
 
 export const metadata: Metadata = {
   title: "Barba Club",
@@ -23,11 +24,13 @@ export default function AuthLayout({
     <>
       <SessionProviderComponent>
         <QueryClientProviderComponent>
-          <BarbershopProvider>
-            <Header />
-            <main className="container mx-auto px-4 py-8">{children}</main>
-            <Footer />
-          </BarbershopProvider>
+          <NotificationProvider>
+            <BarbershopProvider>
+              <Header />
+              <main className="container mx-auto px-4 py-8">{children}</main>
+              <Footer />
+            </BarbershopProvider>
+          </NotificationProvider>
         </QueryClientProviderComponent>
       </SessionProviderComponent>
     </>
