@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,6 +8,7 @@ import {
   CircleMinus,
   CirclePlus,
   Clock,
+  Loader2,
 } from "lucide-react";
 import { formatDate } from "@/utils/formatDate";
 import { useBarbershop } from "@/contexts/BarberShop";
@@ -18,11 +19,53 @@ interface QueueSectionProps {
 }
 
 const QueueSection = ({ open, user }: QueueSectionProps) => {
+  const [isLoadingActionQueue, setIsLoadingActionQueue] = useState(false);
   const { addToQueue, isAdmin, removeFromQueue, queue } = useBarbershop();
 
-  const isLoading = queue === undefined;
+  const isLoadingQueue = queue === undefined;
 
-  if (isLoading) {
+  const userInQueue = queue?.find((item) => item.user.id === user?.id);
+
+  useEffect(() => {
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then((permission) => {
+        console.log("Notificação permitida:", permission);
+      });
+    }
+  }, []);
+
+  const [previousPosition, setPreviousPosition] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (
+      userInQueue?.position !== undefined &&
+      userInQueue.position !== previousPosition
+    ) {
+      if (
+        previousPosition !== null &&
+        userInQueue.position !== previousPosition
+      ) {
+        if ("serviceWorker" in navigator && "PushManager" in window) {
+          navigator.serviceWorker.ready.then((registration) => {
+            registration.active?.postMessage({
+              type: "push",
+              payload: {
+                title: "Atualização na fila",
+                body: `Sua posição na fila mudou para ${userInQueue.position}º.`,
+              },
+            });
+          });
+        } else {
+          new Notification("Atualização na fila", {
+            body: `Sua posição na fila mudou para ${userInQueue.position}º.`,
+          });
+        }
+      }
+      setPreviousPosition(userInQueue.position);
+    }
+  }, [userInQueue?.position, previousPosition]);
+
+  if (isLoadingQueue) {
     // Skeleton enquanto carrega
     return (
       <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
@@ -56,14 +99,15 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
     );
   }
 
-  const userInQueue = queue.find((item) => item.user.id === user?.id);
-
   const handleOnClick = () => {
+    setIsLoadingActionQueue(true);
     if (!userInQueue) {
       addToQueue();
     } else {
       removeFromQueue(userInQueue.id);
     }
+    setIsLoadingActionQueue(false);
+    console.log(isLoadingActionQueue);
   };
 
   return (
@@ -117,6 +161,9 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
                     : "bg-amber-500 text-black hover:bg-amber-400"
                 } transition-colors text-sm md:text-base`}
               >
+                {isLoadingActionQueue && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 {userInQueue ? (
                   <>
                     <CircleMinus className="h-4 w-4 md:h-5 md:w-5 mr-2" />
