@@ -7,9 +7,8 @@ export const MenuSection = ({ onClickLink }: { onClickLink: () => void }) => {
   const pathname = usePathname();
 
   return (
-    <div className="space-y-4 mb-6">
-      <nav className="space-y-3">
-        {/* Link para Voltar ao Início */}
+    <div className="py-4">
+      <nav className="space-y-2">
         <Link
           onClick={onClickLink}
           href="/"
@@ -23,7 +22,6 @@ export const MenuSection = ({ onClickLink }: { onClickLink: () => void }) => {
           <span className="text-sm font-medium">Início</span>
         </Link>
 
-        {/* Link para Nossos Cortes */}
         <Link
           href="/cortes"
           onClick={onClickLink}
@@ -37,7 +35,6 @@ export const MenuSection = ({ onClickLink }: { onClickLink: () => void }) => {
           <span className="text-sm font-medium">Nossos Cortes</span>
         </Link>
 
-        {/* Link para Sobre */}
         <Link
           href="/sobre"
           onClick={onClickLink}

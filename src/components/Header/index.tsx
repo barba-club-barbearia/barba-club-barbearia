@@ -1,16 +1,15 @@
 "use client";
-import { Clock, Menu, Scissors, X } from "lucide-react";
+import { Menu, Scissors, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
-import { useBarbershop } from "@/contexts/BarberShop";
-import { Badge } from "../ui/badge";
 import { MenuSection } from "../MenuSection";
 import { useRouter } from "next/navigation";
+import NotificationToggle from "./Toggle";
+import BarbershopStatus from "./BarberShopStatus";
 
 export const Header = () => {
   const router = useRouter();
-  const { isOpen, toggleBarbershop, isAdmin } = useBarbershop();
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -75,39 +74,18 @@ export const Header = () => {
               </Button>
             </div>
 
-            {/* Status da Barbearia */}
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-zinc-500" />
-                <h3 className="text-sm font-medium text-zinc-400">
-                  Status da Barbearia
-                </h3>
-              </div>
-              <Badge
-                variant="outline"
-                className={`w-full justify-center py-3 ${
-                  isOpen
-                    ? "text-green-400 border-green-400/50 bg-green-500/5"
-                    : "text-red-400 border-red-400/50 bg-red-500/5"
-                }`}
-              >
-                {isOpen ? "Aberta" : "Fechada"}
-              </Badge>
+            <div className="h-px bg-amber-900/20 my-2" />
 
-              {/* Botão para admin */}
-              {isAdmin && (
-                <Button
-                  onClick={() => {
-                    toggleBarbershop();
-                    setIsMenuOpen(false);
-                  }}
-                  variant="outline"
-                  className="w-full bg-amber-500/10 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black"
-                >
-                  {isOpen ? "Fechar Barbearia" : "Abrir Barbearia"}
-                </Button>
-              )}
+            <div className="pt-4 mb-2">
+              {/* Status da Barbearia */}
+              <BarbershopStatus />
             </div>
+            {/* Notificações */}
+            <div className="space-y-4 mb-6">
+              <NotificationToggle />
+            </div>
+
+            <div className="h-px bg-amber-900/20 my-2" />
 
             {/* Menu Sections */}
             <MenuSection onClickLink={() => setIsMenuOpen(false)} />

@@ -26,44 +26,36 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
 
   const userInQueue = queue?.find((item) => item.user.id === user?.id);
 
-  useEffect(() => {
-    if (Notification.permission === "default") {
-      Notification.requestPermission().then((permission) => {
-        console.log("Notificação permitida:", permission);
-      });
-    }
-  }, []);
-
   const [previousPosition, setPreviousPosition] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (
-      userInQueue?.position !== undefined &&
-      userInQueue.position !== previousPosition
-    ) {
-      if (
-        previousPosition !== null &&
-        userInQueue.position !== previousPosition
-      ) {
-        if ("serviceWorker" in navigator && "PushManager" in window) {
-          navigator.serviceWorker.ready.then((registration) => {
-            registration.active?.postMessage({
-              type: "push",
-              payload: {
-                title: "Atualização na fila",
-                body: `Sua posição na fila mudou para ${userInQueue.position}º.`,
-              },
-            });
-          });
-        } else {
-          new Notification("Atualização na fila", {
-            body: `Sua posição na fila mudou para ${userInQueue.position}º.`,
-          });
-        }
-      }
-      setPreviousPosition(userInQueue.position);
+  const sendNotification = (title: string, message: string) => {
+    if (Notification.permission === "granted") {
+      new Notification(title, {
+        body: message,
+        icon: "/icon.png",
+      });
+    } else {
+      console.log("Notificações não permitidas pelo usuário.");
     }
-  }, [userInQueue?.position, previousPosition]);
+  };
+
+  useEffect(() => {
+    if (userInQueue) {
+      const currentPosition = userInQueue.position;
+
+      if (
+        previousPosition !== null && // Evita notificação inicial
+        currentPosition < previousPosition // Mudança para uma posição mais alta
+      ) {
+        sendNotification(
+          "Atualização na Fila",
+          `Sua posição na fila mudou: agora você é o #${currentPosition}º!`
+        );
+      }
+
+      setPreviousPosition(currentPosition);
+    }
+  }, [previousPosition, userInQueue, userInQueue?.position]); // Escute mudanças na posição
 
   if (isLoadingQueue) {
     // Skeleton enquanto carrega
