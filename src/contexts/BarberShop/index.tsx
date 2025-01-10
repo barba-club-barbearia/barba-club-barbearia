@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 interface BarbershopContextData {
   isOpen: boolean;
   toggleBarbershop: () => void;
-  queue: QueueItem[];
+  queue?: QueueItem[];
   addToQueue: () => void;
   removeFromQueue: (id: string) => void;
   isAdmin: boolean;
@@ -42,7 +42,7 @@ export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
     refetchInterval: (data) => (data ? 5000 : 30000),
   });
 
-  const { data: queue = [] } = useQuery<QueueItem[]>({
+  const { data: queue } = useQuery<QueueItem[]>({
     queryKey: ["queue"],
     queryFn: async () => {
       const res = await fetch("/api/queue");
