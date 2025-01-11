@@ -86,15 +86,14 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
     );
   }
 
-  const handleOnClick = () => {
+  const handleOnClick = async () => {
     setIsLoadingActionQueue(true);
     if (!userInQueue) {
-      addToQueue();
+      await addToQueue();
     } else {
-      removeFromQueue(userInQueue.id);
+      await removeFromQueue(userInQueue.id);
     }
     setIsLoadingActionQueue(false);
-    console.log(isLoadingActionQueue);
   };
 
   return (
@@ -141,27 +140,37 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
               </div>
               <Button
                 onClick={handleOnClick}
+                disabled={isLoadingActionQueue}
                 size="default"
-                className={`w-full sm:w-auto ${
+                className={`w-full sm:w-[160px] relative flex justify-center items-center ${
                   userInQueue
                     ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
                     : "bg-amber-500 text-black hover:bg-amber-400"
-                } transition-colors text-sm md:text-base`}
+                } transition-all duration-300 ease-in-out text-sm md:text-base min-h-[40px]`}
               >
-                {isLoadingActionQueue && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {userInQueue ? (
-                  <>
-                    <CircleMinus className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-                    Sair da fila
-                  </>
-                ) : (
-                  <>
-                    <CirclePlus className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-                    Entrar na fila
-                  </>
-                )}
+                <div className="relative w-full flex justify-center items-center">
+                  {isLoadingActionQueue ? (
+                    <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200">
+                      <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2 w-full transition-opacity duration-200">
+                      {userInQueue ? (
+                        <>
+                          <CircleMinus className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
+                          <span className="w-20 text-center">Sair da fila</span>
+                        </>
+                      ) : (
+                        <>
+                          <CirclePlus className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
+                          <span className="w-28 text-center">
+                            Entrar na fila
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
               </Button>
             </div>
 

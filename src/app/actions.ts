@@ -26,18 +26,15 @@ export async function unsubscribeUser() {
 console.log("subscription RAIZ", subscription);
 
 export async function sendNotification(message: string, subscription2: any) {
-  console.log("@@@subscription2", subscription2);
   if (!subscription2) {
     throw new Error("No subscription available");
   }
-
-  console.log("@@@subscription pasouuu");
 
   try {
     await webpush.sendNotification(
       subscription2,
       JSON.stringify({
-        title: "Test Notification",
+        title: "Barba Club",
         body: message,
         icon: "/icon.png",
       })

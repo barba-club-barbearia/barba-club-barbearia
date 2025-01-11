@@ -8,10 +8,10 @@ import { useSession } from "next-auth/react";
 
 interface BarbershopContextData {
   isOpen: boolean;
-  toggleBarbershop: () => void;
+  toggleBarbershop: () => Promise<void>;
   queue?: QueueItem[];
-  addToQueue: () => void;
-  removeFromQueue: (id: string) => void;
+  addToQueue: () => Promise<void>;
+  removeFromQueue: (id: string) => Promise<void>;
   isAdmin: boolean;
   user: any;
 }
@@ -90,16 +90,16 @@ export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const toggleBarbershop = () => {
-    toggleOpenMutation.mutate();
+  const toggleBarbershop = async () => {
+    await toggleOpenMutation.mutateAsync();
   };
 
-  const addToQueue = () => {
-    addMutation.mutate();
+  const addToQueue = async () => {
+    await addMutation.mutateAsync();
   };
 
-  const removeFromQueue = (id: string) => {
-    removeMutation.mutate(id);
+  const removeFromQueue = async (id: string) => {
+    await removeMutation.mutateAsync(id);
   };
 
   const session = useSession();

@@ -1,10 +1,23 @@
-import React from "react";
-import { Clock, CheckCircle, XCircle } from "lucide-react";
+import React, { useState } from "react";
+import { Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBarbershop } from "@/contexts/BarberShop";
 
 const BarbershopStatus = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const { isOpen, toggleBarbershop, isAdmin } = useBarbershop();
+
+  const handleOnClick = async () => {
+    setIsLoading(true);
+    setTimeout(async () => {
+      try {
+        await toggleBarbershop();
+      } catch (error) {
+        console.log(error);
+      }
+      setIsLoading(false);
+    }, 1000);
+  };
 
   return (
     <div className="space-y-2">
@@ -15,19 +28,31 @@ const BarbershopStatus = () => {
         </div>
         <Button
           variant="ghost"
-          onClick={isAdmin ? toggleBarbershop : undefined}
-          className={`h-8 px-3 text-xs flex items-center gap-2 ${
+          onClick={isAdmin ? handleOnClick : undefined}
+          className={`h-8 px-3 text-xs flex items-center transition-all duration-300 ease-in-out w-[100px] justify-center ${
             isOpen
-              ? "bg-green-500/10 hover:bg-green-500/20 text-green-500 hover:text-green-500 "
-              : "bg-red-500/10 hover:bg-red-500/20 text-red-500 hover:text-red-500 "
+              ? "bg-green-500/10 hover:bg-green-500/20 text-green-500 hover:text-green-500"
+              : "bg-red-500/10 hover:bg-red-500/20 text-red-500 hover:text-red-500"
           }`}
         >
-          <span>{isOpen ? "Aberta" : "Fechada"}</span>
-          {isOpen ? (
-            <CheckCircle className="h-3 w-3" />
-          ) : (
-            <XCircle className="h-3 w-3" />
-          )}
+          <div className="relative w-full flex justify-center items-center">
+            {isLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2 w-full transition-opacity duration-200">
+                <span className="w-12 text-center">
+                  {isOpen ? "Aberta" : "Fechada"}
+                </span>
+                {isOpen ? (
+                  <CheckCircle className="h-3 w-3 flex-shrink-0" />
+                ) : (
+                  <XCircle className="h-3 w-3 flex-shrink-0" />
+                )}
+              </div>
+            )}
+          </div>
         </Button>
       </div>
     </div>
