@@ -7,8 +7,6 @@ const NotificationToggle = () => {
   const { subscribeToPush, unsubscribeFromPush, subscription } =
     PushNotificationManager();
 
-  console.log("@@@SUBSCRIPTION", { subscription });
-
   const handleToggleNotifications = async () => {
     if (!subscription) {
       console.log("Notification");
@@ -21,10 +19,6 @@ const NotificationToggle = () => {
   return (
     <div className="space-y-2">
       {/* Notification Section */}
-      <div>
-        sua notificacao está:
-        {JSON.stringify({ subscription })}
-      </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Bell className="h-4 w-4 text-zinc-500" />

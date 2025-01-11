@@ -4,7 +4,7 @@ import {
   unsubscribeUser,
 } from "@/app/actions";
 import { urlBase64ToUint8Array } from "@/utils/urlBase64ToUint8Array";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function PushNotificationManager() {
   const [isSupported, setIsSupported] = useState(false);
@@ -12,23 +12,21 @@ export function PushNotificationManager() {
     null
   );
 
-  useEffect(() => {
-    console.log("");
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
-      registerServiceWorker();
-    }
-  }, []);
-
-  async function registerServiceWorker() {
+  const registerServiceWorker = useCallback(async () => {
     const registration = await navigator.serviceWorker.register("/sw-next.js", {
       scope: "/",
       updateViaCache: "none",
     });
     const sub = await registration.pushManager.getSubscription();
-    console.log("Subscription", subscription);
     setSubscription(sub);
-  }
+  }, []);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      setIsSupported(true);
+      registerServiceWorker();
+    }
+  }, [registerServiceWorker]);
 
   async function subscribeToPush() {
     const registration = await navigator.serviceWorker.ready;
