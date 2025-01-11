@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/utils/formatDate";
 import { useBarbershop } from "@/contexts/BarberShop";
-import { useNotification } from "@/contexts/Notification/useNotification";
+import { PushNotificationManager } from "@/hooks/usePushNotificationManager";
 
 interface QueueSectionProps {
   open: boolean;
@@ -20,8 +20,7 @@ interface QueueSectionProps {
 }
 
 const QueueSection = ({ open, user }: QueueSectionProps) => {
-  const { subscription } = useNotification();
-
+  const { sendTestNotification } = PushNotificationManager();
   const [isLoadingActionQueue, setIsLoadingActionQueue] = useState(false);
   const { addToQueue, isAdmin, removeFromQueue, queue } = useBarbershop();
 
@@ -31,16 +30,6 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
 
   const [previousPosition, setPreviousPosition] = useState<number | null>(null);
 
-  const sendNotification = async (title: string, message: string) => {
-    await fetch("/api/web-push/send", {
-      method: "POST",
-      body: JSON.stringify({ title, message, subscription }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  };
-
   useEffect(() => {
     if (userInQueue) {
       const currentPosition = userInQueue.position;
@@ -49,15 +38,19 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
         previousPosition !== null && // Evita notificação inicial
         currentPosition < previousPosition // Mudança para uma posição mais alta
       ) {
-        sendNotification(
-          "Atualização na Fila",
+        sendTestNotification(
           `Sua posição na fila mudou: agora você é o #${currentPosition}º!`
         );
       }
 
       setPreviousPosition(currentPosition);
     }
-  }, [previousPosition, userInQueue, userInQueue?.position]); // Escute mudanças na posição
+  }, [
+    previousPosition,
+    sendTestNotification,
+    userInQueue,
+    userInQueue?.position,
+  ]);
 
   if (isLoadingQueue) {
     // Skeleton enquanto carrega

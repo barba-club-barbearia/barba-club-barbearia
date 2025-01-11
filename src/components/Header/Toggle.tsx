@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNotification } from "@/contexts/Notification/useNotification";
+import { PushNotificationManager } from "@/hooks/usePushNotificationManager";
 
 const NotificationToggle = () => {
-  const { isSubscribed, handleSubscribe, isGranted, isDenied, errorMessage } =
-    useNotification();
+  const { subscribeToPush, unsubscribeFromPush, subscription } =
+    PushNotificationManager();
 
-  console.log({
-    isGranted,
-    isDenied,
-    errorMessage,
-  });
+  console.log("@@@SUBSCRIPTION", { subscription });
 
   const handleToggleNotifications = async () => {
-    if (!isSubscribed) {
-      const permission = handleSubscribe();
-
-      console.log(permission);
+    if (!subscription) {
+      console.log("Notification");
+      subscribeToPush();
+    } else {
+      unsubscribeFromPush();
     }
   };
 
@@ -26,8 +23,7 @@ const NotificationToggle = () => {
       {/* Notification Section */}
       <div>
         sua notificacao está:
-        {JSON.stringify({ isGranted, isDenied })}
-        {JSON.stringify({ errorMessage })}
+        {JSON.stringify({ subscription })}
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -39,12 +35,12 @@ const NotificationToggle = () => {
           variant="ghost"
           className={`h-8 px-3 text-xs flex items-center gap-2
             ${
-              isSubscribed
+              subscription
                 ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 hover:text-amber-500"
                 : "bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-400"
             }`}
         >
-          {isSubscribed ? (
+          {subscription ? (
             <>
               <span>Ativadas</span>
               <Bell className="h-3 w-3" />
