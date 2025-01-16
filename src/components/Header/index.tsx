@@ -5,8 +5,8 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { MenuSection } from "../MenuSection";
 import { useRouter } from "next/navigation";
-// import NotificationToggle from "./Toggle";
 import BarbershopStatus from "./BarberShopStatus";
+import NotificationToggle from "./Toggle";
 
 export const Header = () => {
   const router = useRouter();
@@ -81,9 +81,9 @@ export const Header = () => {
               <BarbershopStatus />
             </div>
             {/* Notificações */}
-            {/* <div className="space-y-4 mb-6">
+            <div className="space-y-4 mb-6">
               <NotificationToggle />
-            </div> */}
+            </div>
 
             <div className="h-px bg-amber-900/20 my-2" />
 

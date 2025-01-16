@@ -1,34 +1,11 @@
-import {
-  sendNotification,
-  subscribeUser,
-  unsubscribeUser,
-} from "@/app/actions";
+import { sendNotification } from "@/app/actions";
+import { useBarbershop } from "@/contexts/BarberShop";
 import { urlBase64ToUint8Array } from "@/utils/urlBase64ToUint8Array";
-import { useCallback, useEffect, useState } from "react";
 
 export function PushNotificationManager() {
-  const [isSupported, setIsSupported] = useState(false);
-  const [subscription, setSubscription] = useState<PushSubscription | null>(
-    null
-  );
-
-  const registerServiceWorker = useCallback(async () => {
-    const registration = await navigator.serviceWorker.register("/sw-next.js", {
-      scope: "/",
-      updateViaCache: "none",
-    });
-    const sub = await registration.pushManager.getSubscription();
-    setSubscription(sub);
-  }, []);
-
-  useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
-      registerServiceWorker();
-    }
-  }, [registerServiceWorker]);
-
-  async function subscribeToPush() {
+  const { subscription } = useBarbershop();
+  async function subscribeToPush(userId: string) {
+    console.log("subscribe to push");
     const registration = await navigator.serviceWorker.ready;
     const sub = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -36,15 +13,32 @@ export function PushNotificationManager() {
         process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
       ),
     });
-    setSubscription(sub);
-    const serializedSub = JSON.parse(JSON.stringify(sub));
-    await subscribeUser(serializedSub);
+
+    const result = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET}/subscriptions`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription: sub, userId }),
+      }
+    );
+
+    console.log(result);
   }
 
-  async function unsubscribeFromPush() {
+  async function unsubscribeFromPush(userId: string) {
+    console.log("unsbscribe to push");
+
     await subscription?.unsubscribe();
-    setSubscription(null);
-    await unsubscribeUser();
+
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET}/subscriptions`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription, userId }),
+      }
+    );
   }
 
   async function sendTestNotification(message: string) {
@@ -58,7 +52,5 @@ export function PushNotificationManager() {
     subscribeToPush,
     unsubscribeFromPush,
     sendTestNotification,
-    isSupported,
-    subscription,
   };
 }

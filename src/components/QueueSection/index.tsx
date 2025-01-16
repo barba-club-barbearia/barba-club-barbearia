@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,7 +11,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/utils/formatDate";
 import { useBarbershop } from "@/contexts/BarberShop";
-import { PushNotificationManager } from "@/hooks/usePushNotificationManager";
+import { useQueueSocket } from "@/hooks/useQueueSocket";
 
 interface QueueSectionProps {
   open: boolean;
@@ -20,37 +19,14 @@ interface QueueSectionProps {
 }
 
 const QueueSection = ({ open, user }: QueueSectionProps) => {
-  const { sendTestNotification } = PushNotificationManager();
   const [isLoadingActionQueue, setIsLoadingActionQueue] = useState(false);
-  const { addToQueue, isAdmin, removeFromQueue, queue } = useBarbershop();
+  const { isAdmin } = useBarbershop();
+
+  const { queue, addToQueue, removeFromQueue } = useQueueSocket();
 
   const isLoadingQueue = queue === undefined;
 
   const userInQueue = queue?.find((item) => item.user.id === user?.id);
-
-  const [previousPosition, setPreviousPosition] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (userInQueue) {
-      const currentPosition = userInQueue.position;
-
-      if (
-        previousPosition !== null && // Evita notificação inicial
-        currentPosition < previousPosition // Mudança para uma posição mais alta
-      ) {
-        sendTestNotification(
-          `Sua posição na fila mudou: agora você é o #${currentPosition}º!`
-        );
-      }
-
-      setPreviousPosition(currentPosition);
-    }
-  }, [
-    previousPosition,
-    sendTestNotification,
-    userInQueue,
-    userInQueue?.position,
-  ]);
 
   if (isLoadingQueue) {
     // Skeleton enquanto carrega
@@ -89,9 +65,9 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
   const handleOnClick = async () => {
     setIsLoadingActionQueue(true);
     if (!userInQueue) {
-      await addToQueue();
+      addToQueue(user.id);
     } else {
-      await removeFromQueue(userInQueue.id);
+      removeFromQueue(userInQueue.id);
     }
     setIsLoadingActionQueue(false);
   };
