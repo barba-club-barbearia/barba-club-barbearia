@@ -10,7 +10,6 @@ import NotificationToggle from "./Toggle";
 
 export const Header = () => {
   const router = useRouter();
-
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   return (

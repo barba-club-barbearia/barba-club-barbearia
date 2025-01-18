@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,26 +10,27 @@ import {
   Loader2,
 } from "lucide-react";
 import { formatDate } from "@/utils/formatDate";
-import { useBarbershop } from "@/contexts/BarberShop";
 import { useQueueSocket } from "@/hooks/useQueueSocket";
+import { useUserStore } from "@/store/useUser";
+import { useBarbershop } from "@/contexts/BarberShop";
 
-interface QueueSectionProps {
-  open: boolean;
-  user: any;
-}
+const QueueSection = () => {
+  const {
+    queue,
+    addToQueue,
+    removeFromQueue,
+    isLoading: isLoadingActionQueue,
+  } = useQueueSocket();
 
-const QueueSection = ({ open, user }: QueueSectionProps) => {
-  const [isLoadingActionQueue, setIsLoadingActionQueue] = useState(false);
-  const { isAdmin } = useBarbershop();
+  const { isOpen } = useBarbershop();
 
-  const { queue, addToQueue, removeFromQueue } = useQueueSocket();
+  const user = useUserStore((s) => s.user);
 
   const isLoadingQueue = queue === undefined;
 
   const userInQueue = queue?.find((item) => item.user.id === user?.id);
 
-  if (isLoadingQueue) {
-    // Skeleton enquanto carrega
+  if (isLoadingQueue || !user) {
     return (
       <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
         <div className="p-4 md:p-6">
@@ -63,19 +64,17 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
   }
 
   const handleOnClick = async () => {
-    setIsLoadingActionQueue(true);
     if (!userInQueue) {
       addToQueue(user.id);
     } else {
       removeFromQueue(userInQueue.id);
     }
-    setIsLoadingActionQueue(false);
   };
 
   return (
     <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
       <div className="p-4 md:p-6">
-        {open ? (
+        {isOpen ? (
           <>
             {/* Status Bar */}
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between pb-4 rounded-lg  shadow-sm">
@@ -201,7 +200,7 @@ const QueueSection = ({ open, user }: QueueSectionProps) => {
                           </p>
                         </div>
                       </div>
-                      {isAdmin && (
+                      {user?.isAdmin && (
                         <Button
                           variant="ghost"
                           size="sm"

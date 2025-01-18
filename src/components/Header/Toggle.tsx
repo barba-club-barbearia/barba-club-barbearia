@@ -2,26 +2,27 @@
 
 import React from "react";
 import { Bell, BellOff } from "lucide-react";
+
+import { useUserStore } from "@/store/useUser";
+
+import { usePushNotification } from "@/hooks/usePushNotification";
+
 import { Button } from "@/components/ui/button";
-import { PushNotificationManager } from "@/hooks/usePushNotificationManager";
-import { useSession } from "next-auth/react";
-import { useBarbershop } from "@/contexts/BarberShop";
 
 const NotificationToggle = () => {
-  const { data } = useSession();
-  const { subscribeToPush, unsubscribeFromPush } = PushNotificationManager();
+  const { subscribeToPush, unsubscribeFromPush, subscription } =
+    usePushNotification();
 
-  const { subscription } = useBarbershop();
-
-  console.log("@@@subscription", subscription);
+  const user = useUserStore((s) => s.user);
 
   const handleToggleNotifications = async () => {
+    if (!user) return;
+
     if (!subscription) {
-      console.log("Notification");
-      subscribeToPush(data?.user.id ?? "");
-    } else {
-      unsubscribeFromPush(data?.user.id ?? "");
+      subscribeToPush(user.id ?? "");
     }
+
+    unsubscribeFromPush(user.id ?? "");
   };
 
   return (

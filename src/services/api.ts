@@ -11,7 +11,8 @@ const axiosInstanceBackendNextjs = axios.create({
 });
 
 const axiosInstanceBackendWebSocket = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333",
+  baseURL:
+    process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET || "http://localhost:3333",
   timeout: 10000,
 });
 
@@ -28,12 +29,16 @@ axiosInstanceBackendNextjs.interceptors.request.use(
   }
 );
 
-export const getSubscription = async ({ userId }: { userId: string }) => {
+export const getSubscription = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<PushSubscription> => {
   const result = await axiosInstanceBackendWebSocket.get(
     `/subscriptions/${userId}`
   );
 
-  return result.data;
+  return result.data[0];
 };
 
 export const saveSubscription = async ({
@@ -53,5 +58,15 @@ export const deleteSubscription = async ({ userId }: { userId: string }) => {
     data: { userId },
   });
 
+  return result.data;
+};
+
+export const getBarberStatus = async () => {
+  const result = await axiosInstanceBackendNextjs.get(`/api/open`);
+  return result.data;
+};
+
+export const setBarberStatus = async () => {
+  const result = await axiosInstanceBackendNextjs.post(`/api/open`);
   return result.data;
 };

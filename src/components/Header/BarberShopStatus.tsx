@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBarbershop } from "@/contexts/BarberShop";
+import { useUserStore } from "@/store/useUser";
 
 const BarbershopStatus = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { isOpen, toggleBarbershop, isAdmin } = useBarbershop();
+  const { isOpen, toggleBarbershop } = useBarbershop();
+  const isAdmin = useUserStore((s) => s.user?.isAdmin);
+
+  console.log("Pagina BarberShopStatus", { isOpen });
 
   const handleOnClick = async () => {
     setIsLoading(true);
