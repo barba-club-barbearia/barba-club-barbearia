@@ -27,8 +27,8 @@ export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
   const { data: isOpen = false } = useQuery({
     queryKey: ["barbershopStatus"],
     queryFn: async () => {
-      const { data } = await getBarberStatus();
-      return data?.is_open;
+      const result = await getBarberStatus();
+      return result.is_open;
     },
     staleTime: 30000,
     refetchInterval: (data) => (data ? 5000 : 30000),

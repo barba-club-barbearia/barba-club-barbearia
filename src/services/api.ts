@@ -5,10 +5,7 @@ type SaveSubscriptionType = {
   subscription: PushSubscription;
 };
 
-const axiosInstanceBackendNextjs = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
-  timeout: 10000,
-});
+const axiosInstanceBackendNextjs = axios.create({ timeout: 10000 });
 
 const axiosInstanceBackendWebSocket = axios.create({
   baseURL:
