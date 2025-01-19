@@ -13,14 +13,12 @@ const BarbershopStatus = () => {
 
   const handleOnClick = async () => {
     setIsLoading(true);
-    setTimeout(async () => {
-      try {
-        await toggleBarbershop();
-      } catch (error) {
-        console.log(error);
-      }
-      setIsLoading(false);
-    }, 1000);
+    try {
+      await toggleBarbershop();
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -40,22 +38,28 @@ const BarbershopStatus = () => {
           }`}
         >
           <div className="relative w-full flex justify-center items-center">
-            {isLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200">
-                <Loader2 className="h-4 w-4 animate-spin" />
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-2 w-full transition-opacity duration-200">
-                <span className="w-12 text-center">
-                  {isOpen ? "Aberta" : "Fechada"}
-                </span>
-                {isOpen ? (
-                  <CheckCircle className="h-3 w-3 flex-shrink-0" />
-                ) : (
-                  <XCircle className="h-3 w-3 flex-shrink-0" />
-                )}
-              </div>
-            )}
+            <div
+              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+            >
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+
+            <div
+              className={`flex items-center justify-center gap-2 w-full transition-opacity duration-300 ${
+                isLoading ? "opacity-0 pointer-events-none" : "opacity-100"
+              }`}
+            >
+              <span className="w-12 text-center">
+                {isOpen ? "Aberta" : "Fechada"}
+              </span>
+              {isOpen ? (
+                <CheckCircle className="h-3 w-3 flex-shrink-0" />
+              ) : (
+                <XCircle className="h-3 w-3 flex-shrink-0" />
+              )}
+            </div>
           </div>
         </Button>
       </div>

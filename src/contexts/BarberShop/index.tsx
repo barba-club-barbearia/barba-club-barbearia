@@ -36,8 +36,8 @@ export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
 
   const toggleOpenMutation = useMutation({
     mutationFn: async () => {
-      const res = await setBarberStatus();
-      return res.json();
+      const result = await setBarberStatus();
+      return result.is_open;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["barbershopStatus"] });
@@ -48,6 +48,7 @@ export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
     await toggleOpenMutation.mutateAsync();
   };
 
+  console.log("toggleBarbershop", { isOpen });
   return (
     <BarbershopContext.Provider
       value={{
