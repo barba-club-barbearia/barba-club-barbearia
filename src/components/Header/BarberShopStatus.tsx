@@ -9,8 +9,6 @@ const BarbershopStatus = () => {
   const { isOpen, toggleBarbershop } = useBarbershop();
   const isAdmin = useUserStore((s) => s.user?.isAdmin);
 
-  console.log("Pagina BarberShopStatus", { isOpen });
-
   const handleOnClick = async () => {
     setIsLoading(true);
     try {

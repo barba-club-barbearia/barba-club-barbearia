@@ -48,7 +48,6 @@ export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
     await toggleOpenMutation.mutateAsync();
   };
 
-  console.log("toggleBarbershop", { isOpen });
   return (
     <BarbershopContext.Provider
       value={{

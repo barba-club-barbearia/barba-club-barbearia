@@ -39,9 +39,8 @@ export default function LoginPage() {
         router.push("/");
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       setError("Ocorreu um erro ao fazer login");
-      console.log(error);
     } finally {
       setIsLoading(false);
     }

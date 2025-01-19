@@ -1,13 +1,22 @@
-import { sendNotification as sendNotificationAction } from "@/app/actions";
 import { deleteSubscription, saveSubscription } from "@/services/api";
 import { useUserStore } from "@/store/useUser";
 import { urlBase64ToUint8Array } from "@/utils/urlBase64ToUint8Array";
 
 export function usePushNotification() {
   const subscription = useUserStore((s) => s.subscription);
+  const setSubscription = useUserStore((s) => s.setSubscription);
 
   async function subscribeToPush(userId: string) {
     const registration = await navigator.serviceWorker.ready;
+
+    const subscriptionAlreadyExists =
+      await registration.pushManager.getSubscription();
+
+    if (subscriptionAlreadyExists) {
+      await subscriptionAlreadyExists?.unsubscribe();
+      await deleteSubscription({ userId });
+    }
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
@@ -15,29 +24,28 @@ export function usePushNotification() {
       ),
     });
 
-    saveSubscription({
+    await saveSubscription({
       userId,
       subscription,
     });
+
+    setSubscription(subscription);
   }
 
   async function unsubscribeFromPush(userId: string) {
     const registration = await navigator.serviceWorker.ready;
     const subscribe = await registration.pushManager.getSubscription();
-    subscribe?.unsubscribe();
 
-    deleteSubscription({ userId });
-  }
+    await subscribe?.unsubscribe();
 
-  async function sendNotification(message: string) {
-    const serializedSubscription = JSON.parse(JSON.stringify(subscription));
-    await sendNotificationAction(message, serializedSubscription);
+    await deleteSubscription({ userId });
+
+    setSubscription(null);
   }
 
   return {
     subscribeToPush,
     unsubscribeFromPush,
-    sendNotification,
     subscription,
   };
 }

@@ -35,7 +35,7 @@ export const getSubscription = async ({
     `/subscriptions/${userId}`
   );
 
-  return result.data[0];
+  return result.data[0] ?? null;
 };
 
 export const saveSubscription = async ({

@@ -1,6 +1,6 @@
 "use client";
 
-import { getSubscription } from "@/services/api";
+import { deleteSubscription, getSubscription } from "@/services/api";
 import { useUserStore } from "@/store/useUser";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect } from "react";
@@ -13,6 +13,17 @@ export const AppStart = () => {
   const getSubscriptionAsync = useCallback(
     async (userId: string) => {
       const result = await getSubscription({ userId });
+
+      const registration = await navigator.serviceWorker.ready;
+      const hasSubscribeInTheBrowser =
+        await registration.pushManager.getSubscription();
+
+      if (!hasSubscribeInTheBrowser && result) {
+        setSubscription(null);
+        await deleteSubscription({ userId });
+        return;
+      }
+
       setSubscription(result);
     },
     [setSubscription]

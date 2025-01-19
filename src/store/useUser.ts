@@ -9,7 +9,7 @@ type State = {
 
 type Action = {
   setUser: (user: User) => void;
-  setSubscription: (subscription: PushSubscription) => void;
+  setSubscription: (subscription: PushSubscription | null) => void;
 };
 
 export const useUserStore = create<State & Action>((set) => ({
