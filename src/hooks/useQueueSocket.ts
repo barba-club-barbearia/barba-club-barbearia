@@ -19,19 +19,33 @@ export const useQueueSocket = () => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const socket = io(SOCKET_URL);
-    socketRef.current = socket;
+    // Only create a socket if one doesn't exist
+    if (!socketRef.current) {
+      socketRef.current = io(SOCKET_URL, {
+        transports: ["websocket", "polling"],
+      });
 
-    // Quando a fila é atualizada, desativa o loading
-    socket.on("QUEUE_UPDATED", (updatedQueue: QueueItem[]) => {
-      setQueue(updatedQueue);
-      setIsLoading(false); // Atualização chegou, encerra o loading
+      socketRef.current.on("QUEUE_UPDATED", (updatedQueue: QueueItem[]) => {
+        setQueue(updatedQueue);
+        setIsLoading(false);
+      });
+    }
+
+    socketRef.current.on("connect", () => {
+      console.log(
+        "Connected using:",
+        socketRef.current?.io.engine.transport.name
+      );
     });
 
+    // Cleanup function
     return () => {
-      socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, []);
+  }, []); // Empty dependency array
 
   const addToQueue = (userId: string) => {
     setIsLoading(true); // Ativa o loading antes de enviar o evento

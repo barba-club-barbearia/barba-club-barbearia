@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,11 +30,9 @@ const QueueSection = () => {
 
   const isLoadingQueue = queue === null;
 
-  console.log("@@@ QUEUE", queue);
-
   const userInQueue = queue?.find((item) => item.user.id === user?.id);
 
-  if (isLoadingQueue || !user || !isOpen) {
+  if (isLoadingQueue || !user) {
     return (
       <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
         <div className="p-4 md:p-6">
