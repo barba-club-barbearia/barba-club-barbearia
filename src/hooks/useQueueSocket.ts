@@ -14,7 +14,7 @@ interface QueueItem {
 }
 
 export const useQueueSocket = () => {
-  const [queue, setQueue] = useState<QueueItem[]>([]);
+  const [queue, setQueue] = useState<QueueItem[] | null>(null);
   const [isLoading, setIsLoading] = useState(false); // Adiciona o estado de loading
   const socketRef = useRef<Socket | null>(null);
 

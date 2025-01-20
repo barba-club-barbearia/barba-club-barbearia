@@ -26,11 +26,13 @@ const QueueSection = () => {
 
   const user = useUserStore((s) => s.user);
 
-  const isLoadingQueue = queue === undefined;
+  const isLoadingQueue = queue === null;
+
+  console.log("@@@ QUEUE", queue);
 
   const userInQueue = queue?.find((item) => item.user.id === user?.id);
 
-  if (isLoadingQueue || !user) {
+  if (isLoadingQueue || !user || !isOpen) {
     return (
       <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
         <div className="p-4 md:p-6">
@@ -41,7 +43,6 @@ const QueueSection = () => {
               <div className="w-1/3 h-4 bg-gray-800 rounded animate-pulse"></div>
             </div>
           </div>
-          {/* Skeleton de cards */}
           <div className="space-y-4">
             {[...Array(5)].map((_, index) => (
               <div

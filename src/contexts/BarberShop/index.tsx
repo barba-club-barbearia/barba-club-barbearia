@@ -30,8 +30,9 @@ export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
       const result = await getBarberStatus();
       return result.is_open;
     },
-    staleTime: 30000,
-    refetchInterval: (data) => (data ? 5000 : 30000),
+    staleTime: 15 * 60 * 1000,
+    refetchInterval: 15 * 60 * 1000, // 15 minutos
+    refetchOnWindowFocus: false,
   });
 
   const toggleOpenMutation = useMutation({
