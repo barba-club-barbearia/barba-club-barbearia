@@ -1,9 +1,16 @@
-import type { Metadata } from "next";
-import { Work_Sans } from "next/font/google";
-import "./globals.css";
 import { Suspense } from "react";
+
+import type { Metadata } from "next";
+import localFont from "next/font/local";
 import RegisterSW from "@/components/ServiceWorker";
-const workSans = Work_Sans({ subsets: ["latin"] });
+
+import "./globals.css";
+
+const workSans = localFont({
+  src: "./fonts/WorkSans-Regular.ttf",
+  variable: "--font-work-sans",
+  weight: "100 900",
+});
 
 export const metadata: Metadata = {
   title: "Barba Club",
