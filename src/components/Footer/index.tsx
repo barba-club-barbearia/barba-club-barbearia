@@ -10,10 +10,10 @@ export const Footer = () => {
               <Scissors className="h-5 w-5 text-black" />
             </div>
           </div>
-          <p className="text-sm text-zinc-400 mb-2">
+          <p className="text-sm text-zinc-300 mb-2">
             © 2024 Barba Club Barbearia. Todos os direitos reservados.
           </p>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-zinc-400">
             Siga-nos nas redes sociais para novidades e promoções!
           </p>
         </div>

@@ -181,22 +181,22 @@ const QueueSection = () => {
                     >
                       <div className="flex items-center gap-3 md:gap-4">
                         <div className="bg-amber-500/10 h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center">
-                          <span className="text-amber-500 font-medium text-sm md:text-base">
+                          <span className="text-amber-400 font-medium text-sm md:text-base">
                             #{item.position}
                           </span>
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-zinc-200 font-medium text-sm md:text-base">
+                            <span className="text-zinc-100 font-medium text-sm md:text-base">
                               {item.user.name}
                             </span>
                             {item.user.id === user?.id && (
-                              <Badge className=" px-1 py-0 bg-amber-500 text-black text-xs hover:text-white">
+                              <Badge className="px-1 py-0 bg-amber-400 text-black text-xs font-medium hover:bg-amber-500">
                                 Você
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs md:text-sm text-zinc-500 mt-0.5">
+                          <p className="text-xs md:text-sm text-zinc-400 mt-0.5">
                             Entrou em: {formatDate(item.createdAt)}
                           </p>
                         </div>

@@ -35,7 +35,9 @@ export const Header = () => {
             </div>
 
             <Button
-              variant="ghost"
+              type="button"
+              id="menu"
+              aria-label="Descrição da ação do botão" // Add descriptive label here              variant="ghost"
               className="text-amber-500 hover:text-amber-400"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
