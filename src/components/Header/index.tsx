@@ -37,7 +37,8 @@ export const Header = () => {
             <Button
               type="button"
               id="menu"
-              aria-label="Descrição da ação do botão" // Add descriptive label here              variant="ghost"
+              aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"} // Nome acessível descritivo
+              variant="ghost"
               className="text-amber-500 hover:text-amber-400"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -66,6 +67,9 @@ export const Header = () => {
                 <span className="text-amber-500 font-semibold">Menu</span>
               </div>
               <Button
+                type="button"
+                id="button"
+                aria-label="fechar menu"
                 variant="ghost"
                 size="icon"
                 className="text-zinc-400 hover:text-zinc-300"

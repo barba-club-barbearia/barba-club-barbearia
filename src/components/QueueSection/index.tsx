@@ -201,16 +201,26 @@ const QueueSection = () => {
                           </p>
                         </div>
                       </div>
-                      {user?.isAdmin && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm w-full sm:w-auto"
-                          onClick={() => removeFromQueue(item.id)}
-                        >
-                          Remover
-                        </Button>
-                      )}
+                      <div className="w-full flex items-center justify-center gap-2">
+                        {user?.isAdmin && (
+                          <>
+                            <Button
+                              size="sm"
+                              className="bg-amber-300 text-black hover:bg-amber-400 text-sm w-32 sm:w-auto"
+                              onClick={() => removeFromQueue(item.id)}
+                            >
+                              Cortar
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm w-32 sm:w-auto"
+                              onClick={() => removeFromQueue(item.id)}
+                            >
+                              Remover
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   ))
                 : null}
