@@ -19,8 +19,27 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
 
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
 
+    if (!isServer) {
+      config.plugins.push({
+        apply: (compiler) => {
+          compiler.hooks.afterEmit.tapAsync('MyCustomPlugin', (compilation, callback) => {
+            const cssFile = Object.keys(compilation.assets).find((file) =>
+              file.endsWith('.css')
+            );
+
+            // Agora você pode usar o nome do arquivo gerado
+            console.log(`Arquivo CSS gerado: ${cssFile}`);
+
+            // Adicione o nome do arquivo ao `env` ou para outro lugar
+            process.env.CSS_FILE_NAME = cssFile.replace(/\.css$/, ''); // Remova a extensão se necessário
+
+            callback();
+          });
+        },
+      });
+    }
 
     // Removemos a substituição do React pelo Preact que estava causando problemas
 

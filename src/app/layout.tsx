@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import RegisterSW from "@/components/ServiceWorker";
@@ -28,6 +27,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        {/* Adicione suas tags no head diretamente */}
+        <link
+          rel="preconnect"
+          href={process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET}
+        />
+        <link
+          rel="dns-prefetch"
+          href={process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET}
+        />
+      </head>
       <Suspense>
         <RegisterSW />
         <body
