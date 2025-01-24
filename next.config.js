@@ -21,7 +21,7 @@ const nextConfig = {
 
   webpack: (config, { isServer }) => {
 
-    if (!isServer) {
+    if (!isServer && process.env.NODE_ENV === 'production') {
       config.plugins.push({
         apply: (compiler) => {
           compiler.hooks.afterEmit.tapAsync('MyCustomPlugin', (compilation, callback) => {

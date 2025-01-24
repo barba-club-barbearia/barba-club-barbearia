@@ -6,7 +6,7 @@ import RegisterSW from "@/components/ServiceWorker";
 import "./globals.css";
 
 const workSans = localFont({
-  src: "./fonts/WorkSans-Regular.ttf",
+  src: "./fonts/WorkSans.ttf",
   variable: "--font-work-sans",
   weight: "100 900",
 });

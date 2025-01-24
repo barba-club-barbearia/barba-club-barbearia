@@ -24,7 +24,7 @@ export const useBarbershop = (): BarbershopContextData => {
 export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
-  const { data: isOpen = false } = useQuery({
+  const { data: isOpen = null } = useQuery({
     queryKey: ["barbershopStatus"],
     queryFn: async () => {
       const result = await getBarberStatus();

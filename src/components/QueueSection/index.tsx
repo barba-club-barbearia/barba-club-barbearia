@@ -32,7 +32,7 @@ const QueueSection = () => {
 
   const userInQueue = queue?.find((item) => item.user.id === user?.id);
 
-  if (isLoadingQueue || !user) {
+  if (isLoadingQueue || !user || isOpen === null) {
     return (
       <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
         <div className="p-4 md:p-6">
@@ -201,26 +201,16 @@ const QueueSection = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="w-full flex items-center justify-center gap-2">
-                        {user?.isAdmin && (
-                          <>
-                            <Button
-                              size="sm"
-                              className="bg-amber-300 text-black hover:bg-amber-400 text-sm w-32 sm:w-auto"
-                              onClick={() => removeFromQueue(item.id)}
-                            >
-                              Cortar
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm w-32 sm:w-auto"
-                              onClick={() => removeFromQueue(item.id)}
-                            >
-                              Remover
-                            </Button>
-                          </>
-                        )}
-                      </div>
+                      {user?.isAdmin && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm w-full sm:w-auto"
+                          onClick={() => removeFromQueue(item.id)}
+                        >
+                          Remover
+                        </Button>
+                      )}
                     </div>
                   ))
                 : null}
