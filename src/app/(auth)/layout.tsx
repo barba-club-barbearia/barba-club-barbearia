@@ -5,6 +5,9 @@ import { QueryClientProviderComponent } from "@/components/QueryClientProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AppStart } from "@/components/AppStart";
+import { getBarberStatus } from "@/services/api";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/settings/authOptions";
 
 export const metadata: Metadata = {
   title: "Barba Club",
@@ -15,17 +18,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AuthLayout({
+export const dynamic = "force-dynamic";
+
+export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isOpen = await getBarberStatus();
+  const session = await getServerSession(authOptions);
+
   return (
     <>
       <SessionProviderComponent>
         <QueryClientProviderComponent>
-          <BarbershopProvider>
-            <AppStart />
+          {/* Passa o estado inicial para o provider */}
+          <BarbershopProvider initialStatus={isOpen}>
+            <AppStart user={session?.user} />
             <Header />
             <main className="container mx-auto px-4 py-8">{children}</main>
             <Footer />

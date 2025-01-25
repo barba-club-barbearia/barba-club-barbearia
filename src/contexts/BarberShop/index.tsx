@@ -21,15 +21,22 @@ export const useBarbershop = (): BarbershopContextData => {
   return context;
 };
 
-export const BarbershopProvider = ({ children }: { children: ReactNode }) => {
+export const BarbershopProvider = ({
+  children,
+  initialStatus,
+}: {
+  children: ReactNode;
+  initialStatus: boolean;
+}) => {
   const queryClient = useQueryClient();
 
-  const { data: isOpen = null } = useQuery({
+  const { data: isOpen = initialStatus } = useQuery({
     queryKey: ["barbershopStatus"],
     queryFn: async () => {
       const result = await getBarberStatus();
       return result.is_open;
     },
+    initialData: initialStatus,
     staleTime: 15 * 60 * 1000,
     refetchInterval: 15 * 60 * 1000, // 15 minutos
     refetchOnWindowFocus: false,

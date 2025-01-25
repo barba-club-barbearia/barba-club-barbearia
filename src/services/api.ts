@@ -5,7 +5,12 @@ type SaveSubscriptionType = {
   subscription: PushSubscription;
 };
 
-const axiosInstanceBackendNextjs = axios.create({ timeout: 10000 });
+const isServer = typeof window === "undefined";
+
+const axiosInstanceBackendNextjs = axios.create({
+  baseURL: isServer ? process.env.NEXT_PUBLIC_BASE_URL : "/",
+  timeout: 10000,
+});
 
 const axiosInstanceBackendWebSocket = axios.create({
   baseURL:
@@ -15,6 +20,8 @@ const axiosInstanceBackendWebSocket = axios.create({
 
 axiosInstanceBackendNextjs.interceptors.request.use(
   (config) => {
+    if (typeof window === "undefined") return config;
+
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
