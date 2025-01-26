@@ -74,3 +74,8 @@ export const setBarberStatus = async () => {
   const result = await axiosInstanceBackendNextjs.post(`/api/open`);
   return result.data;
 };
+
+export const getQueue = async () => {
+  const result = await axiosInstanceBackendWebSocket.get(`/queue`);
+  return result.data;
+};

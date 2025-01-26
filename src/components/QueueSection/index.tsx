@@ -17,13 +17,17 @@ import { LoadingState } from "../LoadingState";
 import { ClientItem } from "../ClientItem";
 import { QueueItem } from "@/app/types";
 
-const QueueSection = () => {
+type QueueSectionProps = {
+  initialQueue: QueueItem[] | null;
+};
+
+const QueueSection = ({ initialQueue }: QueueSectionProps) => {
   const {
     queue,
     addToQueue,
     removeFromQueue,
     isLoading: isLoadingActionQueue,
-  } = useQueueSocket();
+  } = useQueueSocket({ initialQueue });
 
   const { isOpen } = useBarbershop();
 
@@ -35,6 +39,12 @@ const QueueSection = () => {
     () => queue?.find((item) => item.user.id === user?.id),
     [queue, user?.id]
   );
+
+  console.log({
+    isLoadingQueue,
+    user,
+    isOpen,
+  });
 
   if (isLoadingQueue || !user || isOpen === null) {
     return <LoadingState />;

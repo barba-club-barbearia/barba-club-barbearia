@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
@@ -12,16 +14,21 @@ interface QueueItem {
   };
   createdAt: string;
 }
+type UseQueueSocketProps = {
+  initialQueue: QueueItem[] | null;
+};
 
-export const useQueueSocket = () => {
-  const [queue, setQueue] = useState<QueueItem[] | null>(null);
+export const useQueueSocket = ({ initialQueue }: UseQueueSocketProps) => {
+  const [queue, setQueue] = useState<QueueItem[] | null>(initialQueue || []);
   const [isLoading, setIsLoading] = useState(false); // Adiciona o estado de loading
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     // Only create a socket if one doesn't exist
     if (!socketRef.current) {
-      socketRef.current = io(SOCKET_URL);
+      socketRef.current = io(SOCKET_URL, {
+        transports: ["websocket", "polling"],
+      });
 
       socketRef.current.on("QUEUE_UPDATED", (updatedQueue: QueueItem[]) => {
         setQueue(updatedQueue);
