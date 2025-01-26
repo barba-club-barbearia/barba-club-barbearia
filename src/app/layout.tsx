@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.png",
   },
+  other: {
+    "Cache-Control": "public, max-age=3600, must-revalidate",
+  },
 };
 
 export default function RootLayout({
@@ -33,6 +36,11 @@ export default function RootLayout({
           rel="preconnect"
           href={process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET}
         />
+        <link
+          rel="dns-prefetch"
+          href={process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET}
+        />
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_BASE_URL} />
         <link
           rel="dns-prefetch"
           href={process.env.NEXT_PUBLIC_BASE_URL_WEB_SOCKET}

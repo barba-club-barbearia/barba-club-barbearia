@@ -21,9 +21,7 @@ export const useQueueSocket = () => {
   useEffect(() => {
     // Only create a socket if one doesn't exist
     if (!socketRef.current) {
-      socketRef.current = io(SOCKET_URL, {
-        transports: ["websocket", "polling"],
-      });
+      socketRef.current = io(SOCKET_URL);
 
       socketRef.current.on("QUEUE_UPDATED", (updatedQueue: QueueItem[]) => {
         setQueue(updatedQueue);
