@@ -1,13 +1,21 @@
+import { Suspense } from "react";
+
 import type { Metadata } from "next";
-import { SessionProviderComponent } from "@/components/SessionProvider";
+import { getServerSession } from "next-auth";
+
 import { BarbershopProvider } from "@/contexts/BarberShop";
+
 import { QueryClientProviderComponent } from "@/components/QueryClientProvider";
+import { SessionProviderComponent } from "@/components/SessionProvider";
+import { AppStart } from "@/components/AppStart";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { AppStart } from "@/components/AppStart";
-import { getBarberStatus } from "@/services/api";
-import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/settings/authOptions";
+
+import { getBarberStatus } from "@/services/api";
+
+import Loading from "../loading";
 
 export const metadata: Metadata = {
   title: "Barba Club",
@@ -29,7 +37,7 @@ export default async function AuthLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <>
+    <Suspense fallback={<Loading />}>
       <SessionProviderComponent>
         <QueryClientProviderComponent>
           {/* Passa o estado inicial para o provider */}
@@ -41,6 +49,6 @@ export default async function AuthLayout({
           </BarbershopProvider>
         </QueryClientProviderComponent>
       </SessionProviderComponent>
-    </>
+    </Suspense>
   );
 }
