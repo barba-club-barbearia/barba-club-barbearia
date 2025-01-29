@@ -12,8 +12,17 @@ model Queue {
   position  Int
   inChair   Boolean  @default(false)
   userId    String   @db.ObjectId
+  barberId  String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
+  barber    Barber   @relation(fields: [barberId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Barber {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  name  String  @unique
+  queue Queue[]
+  user  User[]
 }
 
 model Barbershop {
@@ -29,6 +38,8 @@ model User {
   password           String
   isAdmin            Boolean              @default(false)
   queueEntries       Queue[]
+  barberId           String?              @db.ObjectId
+  preferenceBarber   Barber?              @relation(fields: [barberId], references: [id])
   PasswordResetToken PasswordResetToken[]
 }
 

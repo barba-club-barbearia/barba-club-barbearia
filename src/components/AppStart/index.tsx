@@ -34,6 +34,7 @@ export const AppStart = ({ user }: any) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      barberId: user.barberId,
     });
 
     const getSubscriptionAsync = async (userId: string) => {

@@ -1,17 +1,21 @@
-import React from "react";
+import { getServerSession } from "next-auth";
+
+import { getBarberQueueById } from "@/services/api";
 
 import QueueSection from "@/components/QueueSection";
-import { getQueue } from "@/services/api";
+import { authOptions } from "@/settings/authOptions";
+import { FallbackWithoutBarber } from "./FallbackWithoutBarber";
 
-export default async function BarbershopQueue() {
-  const queue = await getQueue();
-  console.log("@@@@ QUEUE", queue);
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user.barberId) {
+    return <FallbackWithoutBarber />;
+  }
+
+  const queue = await getBarberQueueById({ barberId: session?.user.barberId });
+
   return (
-    <div>
-      {/* Main Content */}
-      <div className="max-w-3xl mx-auto">
-        <QueueSection initialQueue={queue} />
-      </div>
-    </div>
+    <QueueSection initialQueue={queue} barberId={session?.user.barberId} />
   );
 }

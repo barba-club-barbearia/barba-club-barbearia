@@ -44,15 +44,31 @@ export const authOptions: AuthOptions = {
           email: user.email,
           name: user.name,
           isAdmin: user.isAdmin,
+          barberId: user.barberId,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user: any }) {
+    async jwt({
+      token,
+      user,
+      trigger,
+      session,
+    }: {
+      token: JWT;
+      user: any;
+      trigger?: any;
+      session?: any;
+    }) {
       if (user) {
         token.isAdmin = user.isAdmin;
         token.id = user.id;
+        token.barberId = user.barberId;
+      }
+
+      if (trigger === "update" && session?.user?.barberId) {
+        token.barberId = session.user.barberId;
       }
 
       return token;
@@ -61,6 +77,7 @@ export const authOptions: AuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.isAdmin = token.isAdmin as boolean;
+        session.user.barberId = token.barberId as string;
         delete session.user.image;
       }
 

@@ -1,3 +1,4 @@
+import { User } from "@prisma/client";
 import axios from "axios";
 
 type SaveSubscriptionType = {
@@ -77,5 +78,37 @@ export const setBarberStatus = async () => {
 
 export const getQueue = async () => {
   const result = await axiosInstanceBackendWebSocket.get(`/queue`);
+  return result.data;
+};
+
+export const getBarbers = async () => {
+  const result = await axiosInstanceBackendNextjs.get(`/api/barbers`);
+  return result.data;
+};
+
+export const getBarberQueueById = async ({
+  barberId,
+}: {
+  barberId?: string;
+}) => {
+  const result = await axiosInstanceBackendNextjs.get(
+    `/api/barbers/${barberId}/queue`
+  );
+
+  return result.data;
+};
+
+export const updateUser = async (user: Partial<User>) => {
+  const result = await axiosInstanceBackendNextjs.put("/api/user", {
+    ...user,
+  });
+
+  return result.data;
+};
+
+export const getBarberById = async (barberId: string) => {
+  const result = await axiosInstanceBackendNextjs.get(
+    `/api/barbers/${barberId}`
+  );
   return result.data;
 };

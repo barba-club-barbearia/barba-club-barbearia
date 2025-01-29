@@ -14,24 +14,36 @@ interface QueueItem {
   };
   createdAt: string;
 }
+
+interface Barber {
+  id: string;
+  name: string;
+  queue: QueueItem[];
+}
+
 type UseQueueSocketProps = {
   initialQueue: QueueItem[] | null;
+  barberId?: string;
 };
 
-export const useQueueSocket = ({ initialQueue }: UseQueueSocketProps) => {
+export const useQueueSocket = ({
+  initialQueue,
+  barberId,
+}: UseQueueSocketProps) => {
   const [queue, setQueue] = useState<QueueItem[] | null>(initialQueue || []);
-  const [isLoading, setIsLoading] = useState(false); // Adiciona o estado de loading
+  const [isLoading, setIsLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Only create a socket if one doesn't exist
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_URL, {
         transports: ["websocket", "polling"],
       });
 
-      socketRef.current.on("QUEUE_UPDATED", (updatedQueue: QueueItem[]) => {
-        setQueue(updatedQueue);
+      socketRef.current.on("QUEUE_UPDATED", (barbers: Barber[]) => {
+        const currentBarberQueue =
+          barbers.find((b) => b.id === barberId)?.queue || [];
+        setQueue(currentBarberQueue);
         setIsLoading(false);
       });
     }
@@ -43,23 +55,22 @@ export const useQueueSocket = ({ initialQueue }: UseQueueSocketProps) => {
       );
     });
 
-    // Cleanup function
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
       }
     };
-  }, []); // Empty dependency array
+  }, [barberId]);
 
   const addToQueue = (userId: string) => {
-    setIsLoading(true); // Ativa o loading antes de enviar o evento
-    socketRef.current?.emit("ADD_TO_QUEUE", { userId });
+    setIsLoading(true);
+    socketRef.current?.emit("ADD_TO_QUEUE", { userId, barberId });
   };
 
   const removeFromQueue = (id: string) => {
-    setIsLoading(true); // Ativa o loading antes de enviar o evento
-    socketRef.current?.emit("REMOVE_TO_QUEUE", { id });
+    setIsLoading(true);
+    socketRef.current?.emit("REMOVE_TO_QUEUE", { id, barberId });
   };
 
   return { queue, addToQueue, removeFromQueue, isLoading };

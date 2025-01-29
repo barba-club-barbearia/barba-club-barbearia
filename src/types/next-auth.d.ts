@@ -7,6 +7,7 @@ declare module "next-auth" {
       name: string;
       email: string;
       isAdmin: boolean;
+      barberId: string;
     } & DefaultSession["user"];
   }
 }
