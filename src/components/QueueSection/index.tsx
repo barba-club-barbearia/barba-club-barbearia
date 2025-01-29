@@ -57,119 +57,110 @@ const QueueSection = ({ initialQueue, barberId }: QueueSectionProps) => {
       : `${queue.length} cliente${queue.length !== 1 ? "s" : ""} na fila`;
 
   return (
-    <>
-      <div>
-        <div className="mb-6 bg-amber-500/5 border border-amber-500/20 rounded-lg p-3 md:p-4">
-          <div className="flex gap-3">
-            <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-amber-500 font-medium text-sm md:text-base">
-                Atenção
-              </p>
-              <p className="text-xs md:text-sm text-zinc-400 leading-relaxed">
-                Fique atento quando chegar sua vez na fila. Caso você não esteja
-                presente quando for chamado, sua vez poderá ser passada para o
-                próximo cliente.
-              </p>
-            </div>
-          </div>
+    <div className="flex flex-col gap-3 p-4 bg-black min-h-screen">
+      {/* Attention Section */}
+      <h2 className="text-base font-medium text-white mb-1">Atenção</h2>
+      <div className="bg-[#1a1a1a] rounded-lg p-4">
+        <div className="flex gap-3">
+          <AlertCircle className="h-5 w-5 text-[#F5A524] shrink-0" />
+          <p className="text-zinc-400 text-sm leading-relaxed">
+            Fique atento quando chegar sua vez na fila. Caso você não esteja
+            presente quando for chamado, sua vez poderá ser passada para o
+            próximo cliente.
+          </p>
         </div>
       </div>
-      <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
-        <div className="p-4 md:p-6">
-          {isOpen ? (
-            <>
-              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between pb-4 rounded-lg shadow-sm">
-                <div className="flex items-center gap-2 text-sm text-zinc-400 mt-2 sm:mt-0">
-                  <Clock className="h-4 w-4" />
-                  atualizado em tempo real
-                </div>
+
+      {/* Queue Status */}
+      <h2 className="text-base font-medium text-white mb-1">Status da fila</h2>
+      <div className="bg-[#1a1a1a] rounded-lg">
+        {isOpen ? (
+          <>
+            <div className="p-4 space-y-4">
+              <div className="flex items-center gap-2 text-sm text-zinc-400">
+                <Clock className="h-4 w-4" />
+                atualizado em tempo real
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 bg-[#1a1a1a] p-3 md:p-4 rounded-lg border border-amber-900/10">
-                <div className="flex items-center gap-3 mb-3 sm:mb-0">
-                  <div className="bg-amber-500/10 p-2 rounded-lg">
-                    <Users className="h-5 w-5 text-amber-500" />
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-[#F5A524]/10 p-2 rounded-lg">
+                    <Users className="h-5 w-5 text-[#F5A524]" />
                   </div>
                   <div>
-                    <p className="text-zinc-200 font-medium text-sm md:text-base">
+                    <p className="text-zinc-200 text-sm">
                       {getQueueMessage(queue)}
                     </p>
                     {userInQueue && (
-                      <p className="text-sm text-zinc-400 mt-0.5">
+                      <p className="text-sm text-zinc-400">
                         Sua posição:{" "}
-                        <span className="text-amber-500">
+                        <span className="text-[#F5A524]">
                           #{userInQueue.position}º
                         </span>
                       </p>
                     )}
                   </div>
                 </div>
+
                 <Button
                   onClick={handleOnClick}
                   disabled={isLoadingActionQueue}
-                  size="default"
-                  className={`w-full sm:w-[160px] relative flex justify-center items-center ${
+                  className={`w-full py-6 ${
                     userInQueue
                       ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                      : "bg-amber-500 text-black hover:bg-amber-400"
-                  } transition-all duration-300 ease-in-out text-sm md:text-base min-h-[40px]`}
+                      : "bg-[#F5A524] text-black hover:bg-[#F5A524]/90"
+                  }`}
                 >
-                  <div className="relative w-full flex justify-center items-center">
-                    {isLoadingActionQueue ? (
-                      <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-200">
-                        <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-2 w-full transition-opacity duration-200">
-                        {userInQueue ? (
-                          <>
-                            <CircleMinus className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
-                            <span className="w-20 text-center">
-                              Sair da fila
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <CirclePlus className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
-                            <span className="w-28 text-center">
-                              Entrar na fila
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {isLoadingActionQueue ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <div className="flex items-center justify-center gap-2">
+                      {userInQueue ? (
+                        <>
+                          <CircleMinus className="h-5 w-5" />
+                          <span>Sair da fila</span>
+                        </>
+                      ) : (
+                        <>
+                          <CirclePlus className="h-5 w-5" />
+                          <span>Entrar na fila</span>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </Button>
               </div>
-
-              <div className="space-y-3">
-                {queue?.map((item) => (
-                  <ClientItem
-                    key={item.id}
-                    item={item}
-                    removeFromQueue={(id) => removeFromQueue(id)}
-                    user={user}
-                  />
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-8 md:py-12">
-              <div className="bg-red-500/10 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="h-5 w-5 md:h-6 md:w-6 text-red-400" />
-              </div>
-              <p className="text-zinc-300 font-medium text-sm md:text-base">
-                A barbearia está fechada
-              </p>
-              <p className="text-xs md:text-sm text-zinc-500 mt-1">
-                Volte mais tarde
-              </p>
             </div>
-          )}
-        </div>
+
+            {/* Queue List */}
+            {queue?.length > 0 && (
+              <div className="border-t border-zinc-800">
+                <div className="p-4 space-y-3">
+                  {queue.map((item) => (
+                    <ClientItem
+                      key={item.id}
+                      item={item}
+                      removeFromQueue={removeFromQueue}
+                      user={user}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <div className="bg-red-500/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="h-6 w-6 text-red-400" />
+            </div>
+            <p className="text-zinc-300 font-medium">
+              A barbearia está fechada
+            </p>
+            <p className="text-sm text-zinc-500 mt-1">Volte mais tarde</p>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

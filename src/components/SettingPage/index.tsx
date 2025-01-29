@@ -1,73 +1,89 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { LogOut, Bell, User } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { Switch } from "@/components/ui/switch";
+import { Loader2 } from "lucide-react";
+import { usePushNotification } from "@/hooks/usePushNotification";
+import { useUserStore } from "@/store/useUser";
 
 const SettingsPage = ({ session, barberData }: any) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { subscribeToPush, unsubscribeFromPush, subscription } =
+    usePushNotification();
+  const user = useUserStore((s) => s.user);
+
   const handleSignOut = async () => {
     await signOut({ callbackUrl: "/entrar" });
   };
 
+  const handleToggleNotifications = async (checked: boolean) => {
+    if (!user) return;
+    setIsLoading(true);
+    try {
+      if (checked) {
+        await subscribeToPush(user.id);
+      } else {
+        await unsubscribeFromPush(user.id);
+      }
+    } catch (error) {
+      console.error("Error toggling notifications:", error);
+    }
+    setIsLoading(false);
+  };
+
   return (
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="flex flex-col gap-4 p-4 bg-black min-h-screen">
       {/* Profile Section */}
-      <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg p-4 md:p-6">
-        <div className="flex items-start gap-4">
-          <div className="bg-amber-500/10 w-12 h-12 rounded-full flex items-center justify-center">
-            <User className="w-6 h-6 text-amber-500" />
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-zinc-200 font-medium text-lg">
-              {session?.user?.name}
-            </h1>
-            <p className="text-zinc-400 text-sm">{session?.user?.email}</p>
-          </div>
-        </div>
+      <div className="flex items-center gap-2 text-white">
+        <User className="w-5 h-5" />
+        <span>Perfil</span>
+      </div>
+      <div className="bg-zinc-900/60 rounded-lg p-4">
+        <h2 className="text-white font-medium">{session?.user?.name}</h2>
+        <span className="text-zinc-400">{session?.user?.email}</span>
       </div>
 
       {/* Selected Barber Section */}
-      <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg p-4 md:p-6">
-        <h2 className="text-zinc-400 text-sm mb-4">Barbeiro selecionado</h2>
-        <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/10">
-          <div className="flex items-center gap-3">
-            <div className="bg-amber-500/10 w-10 h-10 rounded-full flex items-center justify-center">
-              <span className="text-amber-500 font-medium">
-                {barberData?.name?.[0] || "M"}
-              </span>
-            </div>
-            <span className="text-zinc-200 font-medium">
-              {barberData?.name || "Marcus Vinicius"}
-            </span>
+      <div className="text-white">Barbeiro selecionado</div>
+      <div className="bg-zinc-900/60 rounded-lg p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white">
+            {barberData?.name?.[0] || "W"}
           </div>
+          <span className="text-white">
+            {barberData?.name || "Welligton da Silva"}
+          </span>
         </div>
       </div>
 
       {/* Settings Section */}
-      <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg p-4 md:p-6">
-        <h2 className="text-zinc-400 text-sm mb-4">Configurações</h2>
-        <div className="space-y-4">
-          <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/10">
-            <button className="w-full flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Bell className="w-5 h-5 text-zinc-400" />
-                <span className="text-zinc-200">Notificações</span>
-              </div>
-              <div className="w-11 h-6 bg-zinc-800 rounded-full p-0.5 transition-colors duration-200">
-                <div className="w-5 h-5 rounded-full bg-zinc-600 transition-transform duration-200" />
-              </div>
-            </button>
+      <div className="text-white">Configurações</div>
+      <div className="bg-zinc-900/60 rounded-lg">
+        <div className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-white">
+            <Bell className="w-5 h-5" />
+            <span>Notificações</span>
           </div>
-
-          <div className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/10">
-            <button
-              onClick={handleSignOut}
-              className="w-full flex items-center gap-3 text-red-400 hover:text-red-300 transition-colors duration-200"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Sair</span>
-            </button>
+          <div className="flex items-center gap-2">
+            {isLoading && (
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
+            )}
+            <Switch
+              checked={!!subscription}
+              onCheckedChange={handleToggleNotifications}
+              disabled={isLoading}
+              className="data-[state=checked]:bg-orange-500"
+            />
           </div>
+        </div>
+        <div
+          className="p-4 flex items-center gap-2 text-red-500 cursor-pointer border-t border-zinc-800"
+          onClick={handleSignOut}
+        >
+          <LogOut className="w-5 h-5" />
+          <span>Sair</span>
         </div>
       </div>
     </div>
