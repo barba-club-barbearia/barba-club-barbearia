@@ -57,7 +57,7 @@ const QueueSection = ({ initialQueue, barberId }: QueueSectionProps) => {
       : `${queue.length} cliente${queue.length !== 1 ? "s" : ""} na fila`;
 
   return (
-    <div className="flex flex-col gap-3 p-4 bg-black min-h-screen">
+    <div className="flex flex-col gap-3 p-4 bg-black">
       {/* Attention Section */}
       <h2 className="text-base font-medium text-white mb-1">Atenção</h2>
       <div className="bg-[#1a1a1a] rounded-lg p-4">

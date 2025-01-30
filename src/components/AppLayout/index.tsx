@@ -1,76 +1,88 @@
 "use client";
+
 import React from "react";
 import { Home, Scissors, Heart, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 
-const AppLayout = ({ children }: any) => {
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-950">
+    <div className="flex flex-col h-screen bg-black">
       {/* Header */}
-      <header className="p-4 flex items-center justify-between border-b border-zinc-800">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="bg-amber-500 p-2 rounded-lg">
+      <header className="flex items-center gap-2 p-4 bg-black border-b border-zinc-800">
+        <div className="flex items-center gap-2">
+          <div className="bg-[#F5A524] rounded-lg p-2">
             <Scissors className="h-5 w-5 text-black" />
           </div>
           <div>
-            <h1 className="text-white text-sm font-medium">Barba Club</h1>
-            <p className="text-zinc-400 text-xs">Barbearia Premium</p>
+            <h1 className="font-medium text-white">Barba Club</h1>
+            <p className="text-sm text-zinc-400">Barbearia Premium</p>
           </div>
-        </Link>
+        </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6">{children}</main>
+      {/* Main Content - Now uses absolute positioning to fill remaining space */}
+      <main className="absolute top-[73px] bottom-[64px] left-0 right-0 overflow-y-auto">
+        <div className="h-full">{children}</div>
+      </main>
 
       {/* Bottom Navigation */}
-      <div className="border-t border-zinc-800 bg-zinc-950/95 backdrop-blur fixed bottom-0 w-full mt-3">
-        <nav className="flex justify-around p-4 max-w-md mx-auto">
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-zinc-800">
+        <div className="flex items-center justify-around">
           <NavItem
             href="/"
-            icon={<Home className="w-5 h-5" />}
+            icon={<Home className="h-5 w-5" />}
             label="Início"
             isActive={pathname === "/"}
           />
           <NavItem
             href="/barbeiros"
-            icon={<Scissors className="w-5 h-5" />}
+            icon={<Scissors className="h-5 w-5" />}
             label="Barbeiros"
             isActive={pathname === "/barbeiros"}
           />
           <NavItem
             href="/cortes"
-            icon={<Heart className="w-5 h-5" />}
+            icon={<Heart className="h-5 w-5" />}
             label="Cortes"
             isActive={pathname === "/cortes"}
           />
           <NavItem
             href="/configuracoes"
-            icon={<UserCircle className="w-5 h-5" />}
+            icon={<UserCircle className="h-5 w-5" />}
             label="Configurações"
             isActive={pathname === "/configuracoes"}
           />
-        </nav>
-      </div>
+        </div>
+      </nav>
     </div>
   );
 };
 
-const NavItem = ({ icon, label, href, isActive = false }: any) => (
-  <Link href={href} className="flex flex-col items-center gap-1">
-    <div
-      className={cn("text-2xl", isActive ? "text-amber-500" : "text-zinc-400")}
-    >
-      {icon}
+const NavItem = ({
+  icon,
+  label,
+  href,
+  isActive = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  href: string;
+  isActive?: boolean;
+}) => (
+  <Link href={href}>
+    <div className="flex flex-col items-center gap-1 py-3 px-4">
+      <div className={`${isActive ? "text-[#F5A524]" : "text-zinc-400"}`}>
+        {icon}
+      </div>
+      <span
+        className={`text-xs ${isActive ? "text-[#F5A524]" : "text-zinc-400"}`}
+      >
+        {label}
+      </span>
     </div>
-    <span
-      className={cn("text-xs", isActive ? "text-amber-500" : "text-zinc-400")}
-    >
-      {label}
-    </span>
   </Link>
 );
 
