@@ -58,7 +58,7 @@ const QueueSection = ({
       : `${queue.length} cliente${queue.length !== 1 ? "s" : ""} na fila`;
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-black text-white min-h-screen">
+    <div className="flex flex-col gap-4 p-4 bg-black text-white">
       {/* Aviso */}
       <div className="bg-[#1a1a1a] rounded-lg p-4">
         <div className="flex items-start gap-3">

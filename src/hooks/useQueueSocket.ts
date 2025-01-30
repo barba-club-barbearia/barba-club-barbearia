@@ -15,12 +15,6 @@ interface QueueItem {
   createdAt: string;
 }
 
-interface Barber {
-  id: string;
-  name: string;
-  queue: QueueItem[];
-}
-
 type UseQueueSocketProps = {
   initialQueue: QueueItem[] | null;
   barberId?: string;
@@ -38,12 +32,11 @@ export const useQueueSocket = ({
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_URL, {
         transports: ["websocket", "polling"],
+        query: { barberId }, // Envia o barberId no handshake
       });
 
-      socketRef.current.on("QUEUE_UPDATED", (barbers: Barber[]) => {
-        const currentBarberQueue =
-          barbers.find((b) => b.id === barberId)?.queue || [];
-        setQueue(currentBarberQueue);
+      socketRef.current.on("QUEUE_UPDATED", (queue: QueueItem[]) => {
+        setQueue(queue); // Recebe diretamente a fila do barbeiro
         setIsLoading(false);
       });
     }
