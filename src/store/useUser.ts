@@ -19,10 +19,10 @@ export const useUserStore = create<State & Action>()(
     subscription: null,
     user: null,
     setUser: (user) => set({ user }, false, "setUser"),
-    setPreferenceBarber: (preferenceBarber) =>
+    setPreferenceBarber: (barberId) =>
       set(
         (state) => ({
-          user: state.user ? { ...state.user, preferenceBarber } : null,
+          user: state.user ? { ...state.user, barberId } : null,
         }),
         false,
         "setPreferenceBarber"
