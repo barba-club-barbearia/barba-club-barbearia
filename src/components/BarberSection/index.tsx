@@ -1,23 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { UserRound, Clock, Check, Loader2 } from "lucide-react";
-import { useUserStore } from "@/store/useUser";
+
 import { useSession } from "next-auth/react";
-import { updateUser } from "@/services/api";
+import { useRouter } from "next/navigation";
+
 import { Barber } from "@prisma/client";
+
+import { UserRound, Clock, Check, Loader2 } from "lucide-react";
+
+import { useUserStore } from "@/store/useUser";
+
+import { updateUser } from "@/services/api";
 
 type BarberSelectionProps = {
   barbers: Barber[];
 };
 
 const BarberSelection = ({ barbers }: BarberSelectionProps) => {
-  const { update: updateSessionUser } = useSession();
   const router = useRouter();
+  const { update: updateSessionUser } = useSession();
+
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+
   const setPreferenceBarber = useUserStore((s) => s.setPreferenceBarber);
   const user = useUserStore((s) => s.user);
-  const [isLoading, setIsLoading] = useState<string | null>(null);
 
   const handleSelectBarber = async (barberId: string) => {
     if (user?.barberId !== barberId) {
@@ -35,7 +42,6 @@ const BarberSelection = ({ barbers }: BarberSelectionProps) => {
         router.push(`/`);
       } catch (error) {
         console.error("Erro ao selecionar barbeiro:", error);
-        // Você pode adicionar um toast de erro aqui se quiser
       } finally {
         setIsLoading(null);
       }

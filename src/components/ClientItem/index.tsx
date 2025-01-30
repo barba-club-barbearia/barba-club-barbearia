@@ -1,52 +1,79 @@
-import React from "react";
+import React, { memo } from "react";
+
+import { Trash2 } from "lucide-react";
+
 import { formatDate } from "@/utils/formatDate";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
+
+import { User as UserType } from "@/types/user";
+import { Badge } from "@/components/ui/badge";
+
 import { QueueItem } from "@/app/types";
-import { User } from "@/types/user";
 
-type ClientItemProps = {
+interface ClientItemProps {
   item: QueueItem;
-  user: User;
+  user: UserType;
   removeFromQueue: (itemId: string) => void;
-};
+  index: number;
+}
 
-export const ClientItem = React.memo(
+export const ClientItem = memo(
   ({ item, user, removeFromQueue }: ClientItemProps) => {
+    const isCurrentUser = item.user.id === user?.id;
+
     return (
-      <div className="bg-[#0f0f0f] p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div
+        className={`relative rounded-lg p-3 mb-2 transition-all bg-[#2a2a2a]`}
+      >
         <div className="flex items-center gap-3">
-          <div className="bg-[#F5A524]/10 h-8 w-8 rounded-full flex items-center justify-center">
-            <span className="text-[#F5A524] font-medium text-sm">
-              #{item.position}
-            </span>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-zinc-100 font-medium text-sm">
-                {item.user.name}
+          {/* Número da posição */}
+          <div className="flex-shrink-0">
+            <div
+              className={`h-10 w-10 rounded-lg ${
+                isCurrentUser ? "bg-yellow-400" : "bg-yellow-400/10"
+              } flex items-center justify-center`}
+            >
+              <span
+                className={`font-bold ${
+                  isCurrentUser ? "text-black" : "text-yellow-400"
+                }`}
+              >
+                #{item.position}
               </span>
-              {item.user.id === user?.id && (
-                <Badge className="bg-[#F5A524] text-black text-xs hover:bg-[#F5A524]/90">
+            </div>
+          </div>
+
+          {/* Informações do cliente */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="truncate">
+                <h3 className="text-gray-100 font-medium text-sm truncate">
+                  {item.user.name}
+                </h3>
+                <p className="text-xs text-gray-400 truncate">
+                  Entrou em: {formatDate(item.createdAt)}
+                </p>
+              </div>
+              {isCurrentUser && (
+                <Badge className="flex-shrink-0 bg-yellow-400 text-black text-xs">
                   Você
                 </Badge>
               )}
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              Entrou em: {formatDate(item.createdAt)}
-            </p>
           </div>
+
+          {/* Botão de remover (apenas para admin) */}
+          {user?.isAdmin && (
+            <button
+              onClick={() => removeFromQueue(item.id)}
+              className="flex items-center gap-1 text-sm text-red-400 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors"
+              title="Remover da fila" // Tooltip para explicar a ação
+            >
+              <Trash2 className="h-5 w-5" /> {/* Ícone maior e vermelho */}
+              <span className="hidden sm:inline">Remover</span>{" "}
+              {/* Texto visível apenas em telas maiores */}
+            </button>
+          )}
         </div>
-        {user?.isAdmin && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm w-full sm:w-auto mt-2 sm:mt-0"
-            onClick={() => removeFromQueue(item.id)}
-          >
-            Remover
-          </Button>
-        )}
       </div>
     );
   }
