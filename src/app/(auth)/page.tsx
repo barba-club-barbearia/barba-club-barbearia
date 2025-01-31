@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 
 import QueueSection from "@/components/QueueSection";
 import { authOptions } from "@/settings/authOptions";
+
 import { FallbackWithoutBarber } from "./FallbackWithoutBarber";
 
 export default async function Home() {
@@ -11,5 +12,5 @@ export default async function Home() {
     return <FallbackWithoutBarber />;
   }
 
-  return <QueueSection />;
+  return <QueueSection user={session.user} />;
 }

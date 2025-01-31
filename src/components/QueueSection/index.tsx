@@ -11,28 +11,29 @@ import {
   Users,
 } from "lucide-react";
 
-import { useUserStore } from "@/store/useUser";
 import { useBarbershop } from "@/contexts/BarberShop";
 import { LoadingState } from "../LoadingState";
 import { QueueItem } from "@/app/types";
 import { ClientItem } from "../ClientItem";
+import { User } from "@/types/user";
 
-const QueueSection = () => {
+const QueueSection = ({ user }: { user: User }) => {
   const {
     queue,
+    isOpen,
     addToQueue,
     removeFromQueue,
     isLoading: isLoadingActionQueue,
   } = useBarbershop();
 
-  const { isOpen } = useBarbershop();
-  const user = useUserStore((s) => s.user);
   const isLoadingQueue = queue === null;
 
   const userInQueue = useMemo(
     () => queue?.find((item) => item.user.id === user?.id),
     [queue, user?.id]
   );
+
+  console.log({ user, isLoadingQueue, isOpen });
 
   if (isLoadingQueue || !user || isOpen === null) {
     return <LoadingState />;
