@@ -24,6 +24,7 @@ const Header = () => {
           <p className="text-sm text-zinc-400">Barbearia Premium</p>
         </div>
       </div>
+
       <button
         onClick={toggleStatus}
         className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors min-w-[72px] h-7 flex items-center justify-center
