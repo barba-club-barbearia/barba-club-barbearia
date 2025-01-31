@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { LogOut, Bell, User } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { Switch } from "@/components/ui/switch";
-import { Loader2 } from "lucide-react";
-import { usePushNotification } from "@/hooks/usePushNotification";
+import { LogOut, Bell, User, Loader2 } from "lucide-react";
+
 import { useUserStore } from "@/store/useUser";
-import BarbershopStatus from "../Header/BarberShopStatus";
+
+import { usePushNotification } from "@/hooks/usePushNotification";
+import { Switch } from "@/components/ui/switch";
 
 const SettingsPage = ({ session, barberData }: any) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -80,8 +80,6 @@ const SettingsPage = ({ session, barberData }: any) => {
             />
           </div>
         </div>
-        {/* Add the BarbershopStatus component here */}
-        <BarbershopStatus />
         <div
           className="p-4 flex items-center gap-2 text-red-500 cursor-pointer border-t border-zinc-800"
           onClick={handleSignOut}

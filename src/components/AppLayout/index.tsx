@@ -4,6 +4,7 @@ import React from "react";
 import { Home, Scissors, Heart, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Header from "../Header";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -11,17 +12,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col h-screen bg-black">
       {/* Header */}
-      <header className="flex items-center gap-2 p-4 bg-black border-b border-zinc-800">
-        <div className="flex items-center gap-2">
-          <div className="bg-[#F5A524] rounded-lg p-2">
-            <Scissors className="h-5 w-5 text-black" />
-          </div>
-          <div>
-            <h1 className="font-medium text-white">Barba Club</h1>
-            <p className="text-sm text-zinc-400">Barbearia Premium</p>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content - Now uses absolute positioning to fill remaining space */}
       <main className="absolute top-[73px] bottom-[64px] left-0 right-0 overflow-y-auto">
