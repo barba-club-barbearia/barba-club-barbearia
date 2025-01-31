@@ -62,7 +62,7 @@ export const ClientItem = memo(
           </div>
 
           {/* Botão de remover (apenas para admin) */}
-          {user?.isAdmin && (
+          {user?.isAdmin && !isCurrentUser && (
             <button
               onClick={() => removeFromQueue(item.id)}
               className="flex items-center gap-1 text-sm text-red-400 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors"

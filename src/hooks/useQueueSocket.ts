@@ -17,14 +17,17 @@ interface QueueItem {
 
 type UseQueueSocketProps = {
   initialQueue: QueueItem[] | null;
+  initialStatus: boolean;
   barberId?: string;
 };
 
 export const useQueueSocket = ({
   initialQueue,
+  initialStatus,
   barberId,
 }: UseQueueSocketProps) => {
   const [queue, setQueue] = useState<QueueItem[] | null>(initialQueue || []);
+  const [isOpen, setIsOpen] = useState<boolean>(initialStatus || false);
   const [isLoading, setIsLoading] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
@@ -32,13 +35,22 @@ export const useQueueSocket = ({
     if (!socketRef.current) {
       socketRef.current = io(SOCKET_URL, {
         transports: ["websocket", "polling"],
-        query: { barberId }, // Envia o barberId no handshake
+        query: { barberId },
       });
 
       socketRef.current.on("QUEUE_UPDATED", (queue: QueueItem[]) => {
-        setQueue(queue); // Recebe diretamente a fila do barbeiro
+        setQueue(queue);
         setIsLoading(false);
       });
+
+      socketRef.current.on(
+        "BARBER_STATUS",
+        ({ isOpen }: { isOpen: boolean }) => {
+          console.log({ isOpen });
+          setIsOpen(isOpen);
+          setIsLoading(false);
+        }
+      );
     }
 
     socketRef.current.on("connect", () => {
@@ -56,6 +68,11 @@ export const useQueueSocket = ({
     };
   }, [barberId]);
 
+  const handleBarberStatus = () => {
+    setIsLoading(true);
+    socketRef.current?.emit("BARBER_STATUS");
+  };
+
   const addToQueue = (userId: string) => {
     setIsLoading(true);
     socketRef.current?.emit("ADD_TO_QUEUE", { userId, barberId });
@@ -66,5 +83,12 @@ export const useQueueSocket = ({
     socketRef.current?.emit("REMOVE_TO_QUEUE", { id, barberId });
   };
 
-  return { queue, addToQueue, removeFromQueue, isLoading };
+  return {
+    queue,
+    isOpen,
+    addToQueue,
+    removeFromQueue,
+    isLoading,
+    handleBarberStatus,
+  };
 };

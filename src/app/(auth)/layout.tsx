@@ -11,7 +11,7 @@ import { AppStart } from "@/components/AppStart";
 
 import { authOptions } from "@/settings/authOptions";
 
-import { getBarberStatus } from "@/services/api";
+import { getBarberQueueById, getBarberStatus } from "@/services/api";
 
 import Loading from "../loading";
 import AppLayout from "@/components/AppLayout";
@@ -32,14 +32,20 @@ export default async function AuthLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isOpen = await getBarberStatus();
+  const result = await getBarberStatus();
   const session = await getServerSession(authOptions);
+
+  const queue = await getBarberQueueById({ barberId: session?.user.barberId });
 
   return (
     <Suspense fallback={<Loading />}>
       <SessionProviderComponent>
         <QueryClientProviderComponent>
-          <BarbershopProvider initialStatus={isOpen}>
+          <BarbershopProvider
+            initialQueue={queue}
+            barberId={session?.user.barberId}
+            initialStatus={result.is_open}
+          >
             <AppStart user={session?.user} />
             <AppLayout>{children}</AppLayout>
           </BarbershopProvider>

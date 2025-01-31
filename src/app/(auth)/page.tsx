@@ -1,7 +1,5 @@
 import { getServerSession } from "next-auth";
 
-import { getBarberQueueById } from "@/services/api";
-
 import QueueSection from "@/components/QueueSection";
 import { authOptions } from "@/settings/authOptions";
 import { FallbackWithoutBarber } from "./FallbackWithoutBarber";
@@ -13,9 +11,5 @@ export default async function Home() {
     return <FallbackWithoutBarber />;
   }
 
-  const queue = await getBarberQueueById({ barberId: session?.user.barberId });
-
-  return (
-    <QueueSection initialQueue={queue} barberId={session?.user.barberId} />
-  );
+  return <QueueSection />;
 }

@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
 import { usePushNotification } from "@/hooks/usePushNotification";
 import { useUserStore } from "@/store/useUser";
+import BarbershopStatus from "../Header/BarberShopStatus";
 
 const SettingsPage = ({ session, barberData }: any) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +21,7 @@ const SettingsPage = ({ session, barberData }: any) => {
 
   const handleToggleNotifications = async (checked: boolean) => {
     if (!user) return;
+
     setIsLoading(true);
     try {
       if (checked) {
@@ -78,6 +80,8 @@ const SettingsPage = ({ session, barberData }: any) => {
             />
           </div>
         </div>
+        {/* Add the BarbershopStatus component here */}
+        <BarbershopStatus />
         <div
           className="p-4 flex items-center gap-2 text-red-500 cursor-pointer border-t border-zinc-800"
           onClick={handleSignOut}

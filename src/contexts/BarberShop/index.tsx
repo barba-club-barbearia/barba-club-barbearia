@@ -1,12 +1,23 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getBarberStatus, setBarberStatus } from "@/services/api";
+import { useQueueSocket } from "@/hooks/useQueueSocket";
+import { QueueItem } from "@/app/types";
 
 interface BarbershopContextData {
+  queue: QueueItem[] | null;
+  isLoading: boolean;
   isOpen: boolean;
-  toggleBarbershop: () => Promise<void>;
+  handleBarberStatus: () => void;
+  removeFromQueue: (id: string) => void;
+  addToQueue: (userId: string) => void;
+}
+
+interface BarberShopProviderProps {
+  children: ReactNode;
+  initialStatus: boolean;
+  initialQueue: QueueItem[] | null;
+  barberId?: string;
 }
 
 const BarbershopContext = createContext<BarbershopContextData | undefined>(
@@ -24,43 +35,27 @@ export const useBarbershop = (): BarbershopContextData => {
 export const BarbershopProvider = ({
   children,
   initialStatus,
-}: {
-  children: ReactNode;
-  initialStatus: boolean;
-}) => {
-  const queryClient = useQueryClient();
-
-  const { data: isOpen = initialStatus } = useQuery({
-    queryKey: ["barbershopStatus"],
-    queryFn: async () => {
-      const result = await getBarberStatus();
-      return result.is_open;
-    },
-    initialData: initialStatus,
-    staleTime: 15 * 60 * 1000,
-    refetchInterval: 15 * 60 * 1000, // 15 minutos
-    refetchOnWindowFocus: false,
-  });
-
-  const toggleOpenMutation = useMutation({
-    mutationFn: async () => {
-      const result = await setBarberStatus();
-      return result.is_open;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["barbershopStatus"] });
-    },
-  });
-
-  const toggleBarbershop = async () => {
-    await toggleOpenMutation.mutateAsync();
-  };
+  initialQueue,
+  barberId,
+}: BarberShopProviderProps) => {
+  const {
+    handleBarberStatus,
+    removeFromQueue,
+    addToQueue,
+    isOpen,
+    queue,
+    isLoading,
+  } = useQueueSocket({ initialQueue, initialStatus, barberId });
 
   return (
     <BarbershopContext.Provider
       value={{
+        handleBarberStatus,
+        removeFromQueue,
+        addToQueue,
+        isLoading,
         isOpen,
-        toggleBarbershop,
+        queue,
       }}
     >
       {children}
