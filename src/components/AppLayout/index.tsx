@@ -11,7 +11,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Main Content - Now uses absolute positioning to fill remaining space */}
       <main className="absolute top-[73px] bottom-[64px] left-0 right-0 overflow-y-auto">
-        <div className="h-full">{children}</div>
+        <div>{children}</div>
       </main>
 
       {/* Bottom Navigation */}

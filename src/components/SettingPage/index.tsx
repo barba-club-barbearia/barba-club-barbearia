@@ -36,7 +36,7 @@ const SettingsPage = ({ session, barberData }: any) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-black min-h-screen">
+    <div className="flex flex-col gap-4 p-4 bg-black">
       {/* Profile Section */}
       <div className="flex items-center gap-2 text-white">
         <User className="w-5 h-5" />
