@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "analyze": "next build && npx webpack-bundle-analyzer .next/stats.json",
-    "dev": "next dev --turbo",
+    "analyze": "next build",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -33,7 +33,6 @@
     "next-auth": "^4.24.11",
     "next-pwa": "^5.6.0",
     "nodemailer": "^6.9.16",
-    "prisma": "5.22.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "socket.io-client": "^4.8.1",
@@ -47,9 +46,11 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "client@5.22.0": "link:prisma/client@5.22.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
+    "prisma": "5.22.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
     "webpack-stats-plugin": "^1.1.3"
