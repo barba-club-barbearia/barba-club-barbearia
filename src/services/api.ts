@@ -38,12 +38,16 @@ export const getSubscription = async ({
   userId,
 }: {
   userId: string;
-}): Promise<PushSubscription> => {
-  const result = await axiosInstanceBackendWebSocket.get(
-    `/subscriptions/${userId}`
-  );
+}): Promise<PushSubscription | null> => {
+  try {
+    const result = await axiosInstanceBackendWebSocket.get(
+      `/subscriptions/${userId}`
+    );
 
-  return result.data[0] ?? null;
+    return result.data[0] ?? null;
+  } catch {
+    return null;
+  }
 };
 
 export const saveSubscription = async ({
@@ -91,11 +95,15 @@ export const getBarberQueueById = async ({
 }: {
   barberId?: string;
 }) => {
-  const result = await axiosInstanceBackendNextjs.get(
-    `/api/barbers/${barberId}/queue`
-  );
+  try {
+    const result = await axiosInstanceBackendNextjs.get(
+      `/api/barbers/${barberId}/queue`
+    );
 
-  return result.data;
+    return result.data;
+  } catch {
+    return [];
+  }
 };
 
 export const updateUser = async (user: Partial<User>) => {
