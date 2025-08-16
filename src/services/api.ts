@@ -115,8 +115,12 @@ export const updateUser = async (user: Partial<User>) => {
 };
 
 export const getBarberById = async (barberId: string) => {
-  const result = await axiosInstanceBackendNextjs.get(
-    `/api/barbers/${barberId}`
-  );
-  return result.data;
+  try {
+    const result = await axiosInstanceBackendNextjs.get(
+      `/api/barbers/${barberId}`
+    );
+    return result.data;
+  } catch  {
+    return [];
+  }
 };

@@ -8,7 +8,7 @@ export default async function Settings() {
 
   let barberData = null;
 
-  if (session?.user.barberId) {
+  if (session?.user?.barberId) {
     barberData = await getBarberById(session.user.barberId);
   }
 

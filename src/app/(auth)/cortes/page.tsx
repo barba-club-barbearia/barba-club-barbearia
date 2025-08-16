@@ -30,7 +30,7 @@ const HAIRCUTS = [
 
 export default function HaircutsPage() {
   return (
-    <div className="bg-[#0f0f0f] rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
+    <div className="rounded-xl border border-amber-900/20 shadow-lg overflow-hidden">
       <div className="p-4 md:p-6">
         {/* Status Bar */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between pb-4 rounded-lg shadow-sm">

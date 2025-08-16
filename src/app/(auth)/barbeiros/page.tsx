@@ -1,8 +1,5 @@
-import BarberSelection from "@/components/BarberSection";
-import { getBarbers } from "@/services/api";
+import { redirect } from "next/navigation";
 
-export default async function Barbeiros() {
-  const barbers = await getBarbers();
-
-  return <BarberSelection barbers={barbers} />;
+export default function Barbeiros() {
+  redirect("/");
 }

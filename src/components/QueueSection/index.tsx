@@ -33,8 +33,6 @@ const QueueSection = ({ user }: { user: User }) => {
     [queue, user?.id]
   );
 
-  console.log({ user, isLoadingQueue, isOpen });
-
   if (isLoadingQueue || !user || isOpen === null) {
     return <LoadingState />;
   }

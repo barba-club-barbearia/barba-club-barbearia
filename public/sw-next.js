@@ -17,5 +17,5 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received.')
   event.notification.close()
-  event.waitUntil(clients.openWindow('https://barbearia-barber-shop.vercel.app/'))
+  event.waitUntil(clients.openWindow('https://barba-club.vercel.app/'))
 })

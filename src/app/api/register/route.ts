@@ -32,11 +32,20 @@ export async function POST(request: Request) {
 
     const hashedPassword = await hash(password, 12);
 
+    // Buscar barbeiros
+    const barbers = await prisma.barber.findMany();
+    let barberId: string | undefined = undefined;
+
+    if (barbers.length === 1) {
+      barberId = barbers[0].id;
+    }
+
     const user = await prisma.user.create({
       data: {
         email,
         name: normalizedName,
         password: hashedPassword,
+        ...(barberId && { barberId }),
       },
     });
 
@@ -44,8 +53,7 @@ export async function POST(request: Request) {
       { message: "Usuário criado com sucesso", userId: user.id },
       { status: 201 }
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Erro ao criar usuário" },
       { status: 500 }

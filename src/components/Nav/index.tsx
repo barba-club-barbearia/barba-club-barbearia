@@ -1,7 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Home, Scissors, Heart, UserCircle } from "lucide-react";
+import { Home, Scissors, UserCircle } from "lucide-react";
 
 const NavItem = ({
   icon,
@@ -16,7 +18,11 @@ const NavItem = ({
 }) => (
   <Link href={href}>
     <div className="flex flex-col items-center gap-1 py-3 px-4">
-      <div className={`${isActive ? "text-[#F5A524]" : "text-zinc-400"}`}>
+      <div
+        className={`h-6 w-6 flex items-center justify-center ${
+          isActive ? "text-[#F5A524]" : "text-zinc-400"
+        }`}
+      >
         {icon}
       </div>
       <span
@@ -40,15 +46,10 @@ export const NavBar = () => {
           label="Início"
           isActive={pathname === "/"}
         />
-        <NavItem
-          href="/barbeiros"
-          icon={<Scissors className="h-5 w-5" />}
-          label="Barbeiros"
-          isActive={pathname === "/barbeiros"}
-        />
+        {/* Barber selection disabled: single barber setup */}
         <NavItem
           href="/cortes"
-          icon={<Heart className="h-5 w-5" />}
+          icon={<Scissors className="h-5 w-5" />}
           label="Cortes"
           isActive={pathname === "/cortes"}
         />
