@@ -38,15 +38,15 @@ export const getSubscription = async ({
   userId,
 }: {
   userId: string;
-}): Promise<PushSubscription | null> => {
+}): Promise<PushSubscription[] | null> => {
   try {
     const result = await axiosInstanceBackendWebSocket.get(
       `/subscriptions/${userId}`
     );
 
-    return result.data[0] ?? null;
+    return result.data ?? [];
   } catch {
-    return null;
+    return [];
   }
 };
 
@@ -120,7 +120,7 @@ export const getBarberById = async (barberId: string) => {
       `/api/barbers/${barberId}`
     );
     return result.data;
-  } catch  {
+  } catch {
     return [];
   }
 };

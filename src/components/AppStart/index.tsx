@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteSubscription, getSubscription } from "@/services/api";
+import { getSubscription } from "@/services/api";
 import { useUserStore } from "@/store/useUser";
 import { useEffect } from "react";
 export const AppStart = ({ user }: any) => {
@@ -19,19 +19,23 @@ export const AppStart = ({ user }: any) => {
     });
 
     const getSubscriptionAsync = async (userId: string) => {
-      const result = await getSubscription({ userId });
+      const subscriptions = await getSubscription({ userId });
 
-      const registration = await navigator.serviceWorker.ready;
-      const hasSubscribeInTheBrowser =
-        await registration.pushManager.getSubscription();
-
-      if (!hasSubscribeInTheBrowser && result) {
-        setSubscription(null);
-        await deleteSubscription({ userId });
+      if (!subscriptions) {
         return;
       }
 
-      setSubscription(result);
+      const registration = await navigator.serviceWorker.ready;
+      const subscriptionBrowser =
+        await registration.pushManager.getSubscription();
+
+      const inTheSameSubscription = subscriptions.find(
+        (s) => s.endpoint === subscriptionBrowser?.endpoint
+      );
+
+      if (inTheSameSubscription) {
+        setSubscription(inTheSameSubscription);
+      }
     };
 
     getSubscriptionAsync(user.id);
