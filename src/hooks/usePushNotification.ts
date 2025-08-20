@@ -7,6 +7,10 @@ export function usePushNotification() {
   const setSubscription = useUserStore((s) => s.setSubscription);
 
   async function subscribeToPush(userId: string) {
+    if (!navigator?.serviceWorker.controller) {
+      return console.log("Service worker doesnt worker");
+    }
+
     const registration = await navigator.serviceWorker.ready;
 
     const subscriptionAlreadyExists =
