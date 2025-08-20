@@ -17,7 +17,7 @@ const NavItem = ({
   isActive?: boolean;
 }) => (
   <Link href={href}>
-    <div className="flex flex-col items-center gap-1 py-3 px-4">
+    <div className="flex flex-col items-center gap-1 py-3 px-4 w-[110px]">
       <div
         className={`h-6 w-6 flex items-center justify-center ${
           isActive ? "text-[#F5A524]" : "text-zinc-400"
@@ -46,7 +46,6 @@ export const NavBar = () => {
           label="Início"
           isActive={pathname === "/"}
         />
-        {/* Barber selection disabled: single barber setup */}
         <NavItem
           href="/cortes"
           icon={<Scissors className="h-5 w-5" />}
