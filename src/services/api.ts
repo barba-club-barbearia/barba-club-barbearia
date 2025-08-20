@@ -62,9 +62,15 @@ export const saveSubscription = async ({
   return result.data;
 };
 
-export const deleteSubscription = async ({ userId }: { userId: string }) => {
+export const deleteSubscription = async ({
+  userId,
+  endpoint,
+}: {
+  userId: string;
+  endpoint?: string;
+}) => {
   const result = await axiosInstanceBackendWebSocket.delete("/subscriptions", {
-    data: { userId },
+    data: { userId, endpoint },
   });
 
   return result.data;

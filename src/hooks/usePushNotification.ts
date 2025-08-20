@@ -8,18 +8,10 @@ export function usePushNotification() {
 
   async function subscribeToPush(userId: string) {
     if (!navigator?.serviceWorker.controller) {
-      return console.log("Service worker doesnt worker");
+      return console.log("Service worker doesnt initialize");
     }
 
     const registration = await navigator.serviceWorker.ready;
-
-    const subscriptionAlreadyExists =
-      await registration.pushManager.getSubscription();
-
-    if (subscriptionAlreadyExists) {
-      await subscriptionAlreadyExists?.unsubscribe();
-      await deleteSubscription({ userId });
-    }
 
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -38,11 +30,11 @@ export function usePushNotification() {
 
   async function unsubscribeFromPush(userId: string) {
     const registration = await navigator.serviceWorker.ready;
-    const subscribe = await registration.pushManager.getSubscription();
+    const subscription = await registration.pushManager.getSubscription();
 
-    await subscribe?.unsubscribe();
+    await subscription?.unsubscribe();
 
-    await deleteSubscription({ userId });
+    await deleteSubscription({ userId, endpoint: subscription?.endpoint });
 
     setSubscription(null);
   }
