@@ -41,6 +41,3 @@ next-env.d.ts
 
 certificates
 
-# PWA files
-public/sw.js
-public/workbox-*.js

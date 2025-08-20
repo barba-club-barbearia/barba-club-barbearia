@@ -1,17 +1,13 @@
-import nextPwa from "@ducanh2912/next-pwa";
-import nextBundleAnalyzer from "@next/bundle-analyzer";
-import { StatsWriterPlugin } from "webpack-stats-plugin";
-
+/* eslint-disable @typescript-eslint/no-require-imports */
 /** @type {import('next').NextConfig} */
-const withPWA = nextPwa({
+const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
   skipWaiting: true,
-  buildExcludes: [/app-build-manifest\.json$/],
   disable: process.env.NODE_ENV === 'development',
 });
 
-const withBundleAnalyzer = nextBundleAnalyzer({
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
@@ -48,6 +44,8 @@ const nextConfig = {
     // Removemos a substituição do React pelo Preact que estava causando problemas
 
     if (process.env.ANALYZE === "true") {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { StatsWriterPlugin } = require("webpack-stats-plugin");
       config.plugins.push(
         new StatsWriterPlugin({
           filename: "stats.json",
@@ -58,11 +56,36 @@ const nextConfig = {
       );
     }
 
-    // A configuração padrão de splitChunks do Next.js já é bem otimizada.
-    // Recomenda-se remover a customização acima, a menos que haja um motivo muito específico para mantê-la.
+    // Otimizações mais seguras do webpack
+
+    config.optimization = {
+      ...config.optimization,
+      minimize: true,
+      splitChunks: {
+        chunks: 'all',
+        minSize: 20000,
+        maxSize: 100000,
+        minChunks: 1,
+        maxAsyncRequests: 30,
+        maxInitialRequests: 30,
+        enforceSizeThreshold: 50000,
+        cacheGroups: {
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+    }
 
     return config;
   },
 };
 
-export default withBundleAnalyzer(withPWA(nextConfig));
+module.exports = withBundleAnalyzer(withPWA(nextConfig));
