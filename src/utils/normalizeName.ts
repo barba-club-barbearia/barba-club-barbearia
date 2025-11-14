@@ -2,15 +2,14 @@ export function normalizeName(name: string): string | never {
   const prepositions = ["de", "da", "do", "das", "dos", "e"];
 
   const umbandaEntities = [
-    // Entidades e linhas
     "exu",
     "pombagira",
     "pomba gira",
     "caboclo",
     "preto velho",
     "preta velha",
-    "erê",
     "ere",
+    "erê",
     "boiadeiro",
     "marinheiro",
     "cigano",
@@ -19,21 +18,21 @@ export function normalizeName(name: string): string | never {
     "tranca rua",
     "tranca-rua",
     "sete encruzilhadas",
-    // Orixás frequentemente usados como "entidade" em nomes não pessoais
     "ogum",
-    "oxóssi",
     "oxossi",
+    "oxóssi",
+    "iansa",
     "iansã",
     "iemonja",
-    "iemanjá",
     "iemanja",
-    "xangô",
+    "iemanjá",
     "xango",
+    "xangô",
     "oxum",
-    "nanã",
     "nana",
-    "obaluaê",
+    "nanã",
     "obaluae",
+    "obaluaê",
     "omulu",
   ];
 
@@ -58,14 +57,10 @@ export function normalizeName(name: string): string | never {
     "escroto",
     "caralho",
     "fudeu",
-    "porra",
     "cu",
     "bunda",
     "bundao",
     "cuzao",
-    "otario",
-    "imbecil",
-    "idiota",
     "babaca",
     "mongoloide",
     "gordo",
@@ -73,7 +68,6 @@ export function normalizeName(name: string): string | never {
     "homessexual",
     "gay",
     "baitola",
-    "dar",
     "sexual",
     "sexo",
     "transante",
@@ -82,110 +76,110 @@ export function normalizeName(name: string): string | never {
   ];
 
   const nonPersonKeywords = [
-    // termos empresariais e institucionais
     "ltda",
-    "s.a.",
+    "s.a",
     "s/a",
     "me",
     "eireli",
     "holding",
     "empresa",
-    "comércio",
     "comercio",
+    "comércio",
     "loja",
     "igreja",
-    "associação",
     "associacao",
+    "associação",
     "clube",
     "sociedade",
     "ong",
-    "os",
-    "fundação",
     "fundacao",
-    "cooperativa",
-    "cnpj",
-    "cpf",
+    "fundação",
     "prefeitura",
-    "câmara",
     "camara",
+    "câmara",
     "secretaria",
-    "universidade",
     "escola",
+    "universidade",
   ];
 
   const trimmed = name.trim();
-  if (trimmed.length === 0) {
+
+  if (!trimmed) {
     throw new Error("Informe um nome válido.");
   }
 
-  // Normalização leve para validações (minúsculas + sem acentos)
-  const toAscii = (value: string) =>
-    value
+  // Remover acentos + minúsculas
+  const normalize = (v: string) =>
+    v
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "");
 
-  const normalizedForCheck = toAscii(trimmed);
+  const normalized = normalize(trimmed);
 
-  // Regras de invalidação
-  if (/\d/.test(normalizedForCheck)) {
+  // Nome não pode conter números
+  if (/\d/.test(normalized)) {
     throw new Error("O nome não deve conter números.");
   }
 
-  if (/[^a-z\s\-']/i.test(normalizedForCheck)) {
+  // Somente letras, espaços, hífen e apóstrofo
+  if (/[^a-z\s\-']/i.test(normalized)) {
     throw new Error("O nome contém caracteres inválidos.");
   }
 
-  // Verifica termos proibidos (umbanda, pejorativos e não pessoa física)
-  const containsAny = (terms: string[]) =>
-    terms.some((term) => normalizedForCheck.includes(toAscii(term)));
+  // Dividir nome em palavras reais
+  const words = normalized.split(/\s+/);
 
-  if (containsAny(umbandaEntities)) {
+  // Função segura: verifica somente palavras inteiras sem falso positivo
+  const containsProhibitedWord = (list: string[]) => {
+    return list.some((term) => {
+      const t = normalize(term);
+      const pattern = new RegExp(`\\b${t}\\b`, "i");
+      return pattern.test(normalized);
+    });
+  };
+
+  if (containsProhibitedWord(umbandaEntities)) {
     throw new Error(
       "Por favor, informe um nome de pessoa física (evite nomes de entidades religiosas)."
     );
   }
 
-  if (containsAny(pejorativeTerms)) {
+  if (containsProhibitedWord(pejorativeTerms)) {
     throw new Error("O nome informado contém termos ofensivos.");
   }
 
-  if (containsAny(nonPersonKeywords)) {
+  if (containsProhibitedWord(nonPersonKeywords)) {
     throw new Error(
       "Parece ser um nome institucional/empresarial. Informe um nome de pessoa física."
     );
   }
 
-  // Divide o nome em palavras e remove espaços extras
-  const words = trimmed.split(/\s+/);
-
-  // Verifica se há pelo menos nome e sobrenome
+  // Deve ter nome e sobrenome
   if (words.length < 2) {
     throw new Error("O nome deve conter pelo menos nome e sobrenome.");
   }
 
-  // Evita palavras de 1 letra (exceções: preposições específicas ou iniciais com ponto, que não suportamos aqui)
-  const hasSuspiciousShortWord = words.some(
-    (w) => toAscii(w).length === 1 && !prepositions.includes(toAscii(w))
-  );
-  if (hasSuspiciousShortWord) {
-    throw new Error(
-      "Detectamos iniciais isoladas. Informe o nome e sobrenome completos."
-    );
+  // Evita iniciais soltas (ex.: "A B Silva")
+  for (const w of words) {
+    if (normalize(w).length === 1 && !prepositions.includes(normalize(w))) {
+      throw new Error(
+        "Detectamos iniciais isoladas. Informe o nome e sobrenome completos."
+      );
+    }
   }
 
-  // Normaliza cada palavra, ignorando preposições
-  const normalizedWords = words.map((word, index) => {
-    const lowerWord = word.toLowerCase();
+  // Capitalizar corretamente
+  const finalWords = trimmed.split(/\s+/).map((word, index) => {
+    const lower = word.toLowerCase();
+    const ascii = normalize(lower);
 
-    // Não aplica a regra de capitalização para preposições
-    if (prepositions.includes(toAscii(lowerWord)) && index !== 0) {
-      return lowerWord;
+    if (prepositions.includes(ascii) && index !== 0) {
+      return lower; // preposição fica minúscula
     }
 
-    // Capitaliza a primeira letra
-    return lowerWord.charAt(0).toUpperCase() + lowerWord.slice(1);
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
   });
 
-  return normalizedWords.join(" ");
+  return finalWords.join(" ");
 }
