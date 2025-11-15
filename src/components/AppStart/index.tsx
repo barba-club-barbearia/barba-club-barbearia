@@ -20,12 +20,12 @@ export const AppStart = ({ user }: any) => {
 
     const getSubscriptionAsync = async (userId: string) => {
       const subscriptions = await getSubscription({ userId });
+      const registration = await navigator.serviceWorker?.ready;
 
-      if (!subscriptions) {
+      if (!subscriptions || !registration) {
         return;
       }
 
-      const registration = await navigator.serviceWorker.ready;
       const subscriptionBrowser =
         await registration.pushManager.getSubscription();
 

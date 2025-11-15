@@ -1,30 +1,34 @@
 import React from "react";
-import { Clock, Scissors } from "lucide-react";
+import { Scissors } from "lucide-react";
 
 const HAIRCUTS = [
   {
-    name: "Corte Degradê",
-    price: "R$ 35,00",
-    description: "Corte moderno com transição suave de comprimento",
-    duration: "45 min",
+    name: "Corte e barba",
+    price: "R$ 45",
   },
   {
-    name: "Barba",
-    price: "R$ 25,00",
-    description: "Acabamento profissional para sua barba",
-    duration: "30 min",
+    name: "Corte com pigmentação",
+    price: "R$ 40",
   },
   {
-    name: "Corte + Barba",
-    price: "R$ 55,00",
-    description: "Combo completo para seu visual",
-    duration: "1h 15min",
+    name: "Nevou",
+    price: "R$ 70",
   },
   {
-    name: "Sobrancelha",
-    price: "R$ 15,00",
-    description: "Design e acabamento para sobrancelhas",
-    duration: "15 min",
+    name: "Corte tesoura",
+    price: "R$ 35",
+  },
+  {
+    name: "Corte Máquina e Tesoura",
+    price: "R$ 30",
+  },
+  {
+    name: "Corte Máquina",
+    price: "R$ 25",
+  },
+  {
+    name: "Pé do Cabelo",
+    price: "R$ 10",
   },
 ];
 
@@ -49,7 +53,7 @@ export default function HaircutsPage() {
               key={index}
               className="bg-[#1a1a1a] p-4 rounded-lg border border-amber-900/10"
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="bg-amber-500/10 p-2 rounded-lg">
                     <Scissors className="h-5 w-5 text-amber-500" />
@@ -58,17 +62,6 @@ export default function HaircutsPage() {
                 </div>
                 <span className="text-amber-500 font-semibold">
                   {haircut.price}
-                </span>
-              </div>
-
-              <p className="text-sm text-zinc-400 mb-4 leading-relaxed">
-                {haircut.description}
-              </p>
-
-              <div className="flex items-center gap-2 text-sm">
-                <Clock className="h-4 w-4 text-zinc-500" />
-                <span className="text-zinc-500">
-                  Duração: {haircut.duration}
                 </span>
               </div>
             </div>
